@@ -37,7 +37,8 @@ export const assets = {
     blog_icon,
     add_icon,
     email_icon,
-    upload_area
+    upload_area,
+    blog_pic_1
     }
 
     export const blog_data = [{

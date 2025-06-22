@@ -1,19 +1,17 @@
+"use client";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./globals.css";
 import Header from "../components/Header";
 import { Roboto } from "next/font/google";
 import { useEffect } from "react";
+import Footer from "@/components/Footer";
 
 const roboto = Roboto({
   subsets: ["latin"],
   variable: "--font-roboto",
   weight: ["400", "500", "700"],
 });
-
-export const metadata = {
-  title: "Blog App",
-  description: "My Blog App",
-};
 
 export default function RootLayout({ children }) {
   useEffect(() => {
@@ -25,6 +23,7 @@ export default function RootLayout({ children }) {
       <body className={roboto.variable}>
         <Header />
         {children}
+        <Footer />
       </body>
     </html>
   );
