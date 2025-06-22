@@ -34,7 +34,7 @@ const BlogList = () => {
             {
               filteredBlogs.length > 0 ?
                 (filteredBlogs.map((item, index) => {
-                  return <BlogItem key={index} image={item.image} title={item.title} description={item.description} category={item.category} />
+                  return <BlogItem id={item.id} key={index} image={item.image} title={item.title} description={item.description} category={item.category} />
                 }))
                 :
                 (<>

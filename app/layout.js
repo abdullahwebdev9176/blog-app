@@ -1,11 +1,8 @@
-"use client";
-
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./globals.css";
-import Header from "../components/Header";
 import { Roboto } from "next/font/google";
-import { useEffect } from "react";
-import Footer from "@/components/Footer";
+import Script from "next/script";
+import LayoutClientShell from "@/components/LayoutClientShell";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -14,16 +11,14 @@ const roboto = Roboto({
 });
 
 export default function RootLayout({ children }) {
-  useEffect(() => {
-    import("bootstrap/dist/js/bootstrap.bundle.min.js");
-  }, []);
-
   return (
     <html lang="en">
       <body className={roboto.variable}>
-        <Header />
-        {children}
-        <Footer />
+        <LayoutClientShell>
+          {children}
+        </LayoutClientShell>
+
+        <Script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" strategy="afterInteractive" />
       </body>
     </html>
   );
