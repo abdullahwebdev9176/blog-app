@@ -10,21 +10,22 @@ const Sidebar = () => {
             <div className="admin-sidebar-box">
                 <ul className="sidebar-list">
 
+
                 <li>
                     <Link href="/admin/AddBlog">
-                        <Image src={assets.add_icon} />
+                        <Image src={assets.add_icon} alt="Add Blog Icon" />
                         Add Blog</Link>
                 </li>
 
                 <li>
                     <Link href="/admin/BlogList">
-                        <Image src={assets.blog_icon} />
+                        <Image src={assets.blog_icon} alt="Blog List Icon" />
                         Blog List</Link>
                 </li>
 
                 <li>
                     <Link href="/admin/Subscription">
-                        <Image src={assets.email_icon} />
+                        <Image src={assets.email_icon} alt="Subscription Icon" />
                         Subscription</Link>
                 </li>
 

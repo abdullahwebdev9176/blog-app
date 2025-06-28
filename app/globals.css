@@ -164,24 +164,29 @@ body {
 
 .admin-layout {
   display: flex;
-  padding: 40px;
 }
 
 .admin-layout-col-1 {
-  width: 250px;
+  width: 300px;
+  border-right: 1px solid #ddd;
+  padding: 40px;
 }
 
-.admin-sidebar-box {
+/* .admin-sidebar-box {
   position: fixed;
   top: 150px;
   left: 0;
   width: 100vh;
   overflow: auto;
-  border-radius: 1px solid #ddd;
-}
+
+} */
 
 .admin-layout-col-2 {
-  width: calc(100% - 250px);
+  width: calc(100% - 300px);
+}
+
+.sidebar-list {
+  padding-left: 0;
 }
 
 .sidebar-list li {
@@ -203,7 +208,8 @@ body {
   color: black;
   font-weight: 500;
 }
-.admin-header{
+
+.admin-header {
   font-size: 25px;
   line-height: normal;
   letter-spacing: normal;
