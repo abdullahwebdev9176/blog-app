@@ -228,3 +228,7 @@ body {
   line-height: normal;
   letter-spacing: normal;
 }
+.contact-form{
+  max-width: 450px;
+  margin: 0 auto;
+}
