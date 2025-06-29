@@ -14,6 +14,15 @@ LoadDB().catch((error) => {
 
 export async function GET(request) {
 
+    const blogId = request.nextUrl.searchParams.get("id");
+    if (blogId) {
+        const blog = await BlogModel.findById(blogId);
+        if (!blog) {   
+            return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+        }
+        return NextResponse.json({ blog });
+    }
+
     const Blogs = await BlogModel.find({}).sort({ createdAt: -1 });
     return NextResponse.json({Blogs});
 }

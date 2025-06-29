@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { blog_data } from '@/Assets/assets';
 import BlogItem from './BlogItem';
 import { toast } from "react-toastify";
 
@@ -19,7 +18,7 @@ const BlogList = () => {
         return;
       } else {
         const data = await response.json();
-        console.log(data.Blogs);
+        // console.log(data.Blogs);
         setBlogData(data.Blogs);
       }
     } catch (error) {
@@ -45,7 +44,7 @@ const BlogList = () => {
         <div className="row justify-content-center">
           {filteredBlogs.length > 0 ? (
             filteredBlogs.map((item) => (
-              <BlogItem id={item.id} key={item._id} image={item.image} title={item.title} description={item.description} category={item.category} />
+              <BlogItem id={item._id} key={item._id} image={item.image} title={item.title} description={item.description} category={item.category} />
             ))
           ) : (
             <h6 className='text-center'>Blogs Not Found</h6>
