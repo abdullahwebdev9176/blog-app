@@ -2,7 +2,7 @@ import React from 'react'
 
 const page = () => {
   return (
-    <div calssName='text-left'>
+    <div className='text-left'>
       <h4>Welcome Hafsa</h4>
 
       <ul className='admin-welcome-list'>
