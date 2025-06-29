@@ -13,12 +13,9 @@ LoadDB().catch((error) => {
 });
 
 export async function GET(request) {
-    console.log("GET request received for /api/blog");
 
-    return NextResponse.json({
-        message: "GET request received for /api/blog",
-        method: "GET",
-    });
+    const Blogs = await BlogModel.find({}).sort({ createdAt: -1 });
+    return NextResponse.json({Blogs});
 }
 
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { assets, blog_data } from "@/Assets/assets"
+import { assets } from "@/Assets/assets"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -11,7 +11,7 @@ const BlogItem = ({ title, image, description, category, id }) => {
                 <div className="card blog-card h-100 shadow-sm">
                     <div className="blog-card-image">
                         <Link href={`/blogs/${id}`}>
-                            <Image src={image} className="card-img-top" alt={title} />
+                            <Image src={image} className="card-img-top" alt={title} width={400} height={300}/>
                         </Link>
                     </div>
                     <div className="card-body d-flex flex-column">
