@@ -1,10 +1,12 @@
 import Sidebar from "@/components/Sidebar";
+import { ToastContainer } from 'react-toastify';
 
 export default function Layout({ children }) {
     return (
         <>
 
             <div className="admin-layout">
+                <ToastContainer />
                 <div className="admin-layout-col-1">
                     <Sidebar />
                 </div>

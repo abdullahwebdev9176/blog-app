@@ -47,7 +47,7 @@ export async function POST(request) {
         description: formData.get("description"),
         image: imageUrl,
         category: formData.get("category"),
-        auther: formData.get("auther"),
+        author: formData.get("author"),
     };
 
     await BlogModel.create(blogData);
