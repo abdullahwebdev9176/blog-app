@@ -44,7 +44,7 @@ const AddBlogPage = () => {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Add New Blog</h1>
+      <h1 className="admin-blog-header">Add New Blog</h1>
       <form className="space-y-4" onSubmit={handleSubmit}>
         <div className="mb-3">
           <label className="mb-1">Title</label>

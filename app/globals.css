@@ -209,7 +209,12 @@ body {
   color: black;
   font-weight: 500;
 }
-
+.admin-blog-header{
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-align: center;
+}
 .admin-header {
   font-size: 25px;
   line-height: normal;
@@ -356,6 +361,9 @@ body {
 @media screen and (max-width: 576px) {
   .privacy-policy-container {
     text-align: center;
+  }
+  .privacy-policy-container ul{
+    padding-left: 0;
   }
 
   .privacy-policy-container li {
