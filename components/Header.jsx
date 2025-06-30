@@ -79,26 +79,22 @@ const Header = () => {
         <>
           <div className="mobile-header-list">
             <ul>
+
               <li>
-                <Link href="/" className="custom-nav-link">
+                <Link href="/" className="custom-nav-link" onClick={() => setMobileHeader(false)}>
                   Home
                 </Link>
               </li>
-
-
               <li>
-                <Link href="/about" className="custom-nav-link">
+                <Link href="/about" className="custom-nav-link" onClick={() => setMobileHeader(false)}>
                   About
                 </Link>
               </li>
-
               <li>
-                <Link href="/contact" className="custom-nav-link">
+                <Link href="/contact" className="custom-nav-link" onClick={() => setMobileHeader(false)}>
                   Contact
                 </Link>
               </li>
-
-
             </ul>
           </div>
         </>
