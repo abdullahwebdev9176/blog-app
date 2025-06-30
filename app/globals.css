@@ -343,10 +343,19 @@ body {
 }
 
 @media screen and (max-width: 576px) {
+  
   .category-filter-box ul{
     padding-left: 0;
+    flex-direction: column;
+    margin-bottom: 0;
   }
+  .blogs-container {
+    padding: 40px 0 40px 0;
+}
   .category-tab {
     padding: 7px 20px;
+    width: 100%;
+    display: block;
+    text-align: center;
 }
 }
