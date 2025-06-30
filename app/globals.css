@@ -217,10 +217,12 @@ body {
   margin-bottom: 0;
   text-align: center;
 }
-.admin-welcome-list{
+
+.admin-welcome-list {
   text-align: left;
   padding-left: 0;
 }
+
 .admin-welcome-list li {
   list-style: none;
   margin-bottom: 10px;
@@ -228,7 +230,123 @@ body {
   line-height: normal;
   letter-spacing: normal;
 }
-.contact-form{
+
+.contact-form {
   max-width: 450px;
   margin: 0 auto;
+}
+
+.mobile-header {
+  display: none;
+}
+
+.mobile-header-parent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: white;
+  z-index: 500;
+  height: 80px;
+}
+
+.mobile-header-img {
+  width: 150px;
+  height: auto;
+}
+
+.mobile-header-img img {
+  width: 100%;
+  object-fit: contain;
+}
+
+.custom-toggle-icon span.fa {
+  font-size: 30px;
+}
+
+.mobile-header-list {
+  position: fixed;
+  top: 90px;
+  left: 0;
+  z-index: 200;
+  width: 100%;
+  background: white;
+  height: calc(100vh - 90px);
+  overflow-y: auto;
+}
+
+.mobile-header-list ul li {
+  list-style: none;
+  border-bottom: 2px solid lightgray;
+}
+
+.custom-nav-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  color: black;
+  text-decoration: none;
+  letter-spacing: 1px;
+}
+
+.mobile-header-list ul {
+  padding-left: 0;
+}
+
+@media screen and (max-width: 991px) {
+  .footer-box {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .desktop-header {
+    display: none;
+  }
+
+  .mobile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #f8f9fa;
+  }
+
+  .admin-layout {
+    flex-direction: column;
+  }
+
+  .admin-layout-col-1 {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .admin-layout-col-2 {
+    width: 100%;
+  }
+
+  .admin-header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .contact-form {
+    width: 90%;
+    margin: 0 auto;
+  }
+
+}
+
+@media screen and (max-width: 576px) {
+  .category-filter-box ul{
+    padding-left: 0;
+  }
+  .category-tab {
+    padding: 7px 20px;
+}
 }

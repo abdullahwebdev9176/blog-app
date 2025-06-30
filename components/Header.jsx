@@ -1,12 +1,22 @@
 "use client";
 
+import Image from 'next/image';
 import Link from 'next/link';
+import { assets } from "@/Assets/assets";
+import { useState } from 'react';
 
 const Header = () => {
+
+  const [mobileHeader, setMobileHeader] = useState(false);
+
+  const toggleMobileHeader = () => {
+    setMobileHeader(!mobileHeader);
+  };
+
   return (
     <>
 
-      <header>
+      <header className='desktop-header'>
         <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
           <div className="container">
             <Link href="/" className="navbar-brand fw-bold text-primary">
@@ -44,6 +54,55 @@ const Header = () => {
           </div>
         </nav>
       </header>
+
+
+      <header className="mobile-header">
+        <div className="mobile-header-parent">
+          <div className="mobile-header-img">
+            <Link href="/"> <Image src={assets.logo} alt="" /></Link>
+          </div>
+          <div className="custom-toggle-icon" onClick={toggleMobileHeader}>
+            {mobileHeader ? (
+              <>
+                <span className="fa fa-xmark"></span>
+              </>
+            ) : (
+              <>
+                <span className="fa fa-bars"></span>
+              </>
+            )}
+          </div>
+        </div>
+      </header>
+
+      {mobileHeader && (
+        <>
+          <div className="mobile-header-list">
+            <ul>
+              <li>
+                <Link href="/" className="custom-nav-link">
+                  Home
+                </Link>
+              </li>
+
+
+              <li>
+                <Link href="/about" className="custom-nav-link">
+                  About
+                </Link>
+              </li>
+
+              <li>
+                <Link href="/contact" className="custom-nav-link">
+                  Contact
+                </Link>
+              </li>
+
+
+            </ul>
+          </div>
+        </>
+      )}
 
     </>
   )
