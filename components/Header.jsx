@@ -49,6 +49,9 @@ const Header = () => {
                 <li className="nav-item">
                   <Link href="/contact" className="nav-link">Contact</Link>
                 </li>
+                <li className="nav-item">
+                  <Link href="/privacy-policy" className="nav-link">Privacy Policy</Link>
+                </li>
               </ul>
             </div>
           </div>
@@ -93,6 +96,12 @@ const Header = () => {
               <li>
                 <Link href="/contact" className="custom-nav-link" onClick={() => setMobileHeader(false)}>
                   Contact
+                </Link>
+              </li>
+
+              <li>
+                <Link href="/privacy-policy" className="custom-nav-link" onClick={() => setMobileHeader(false)}>
+                  Privacy Policy
                 </Link>
               </li>
             </ul>

@@ -298,6 +298,17 @@ body {
   padding-left: 0;
 }
 
+.privacy-policy-container h1 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.privacy-policy-container h2 {
+  font-size: 1.5rem;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
 @media screen and (max-width: 991px) {
   .footer-box {
     flex-direction: column;
@@ -343,19 +354,39 @@ body {
 }
 
 @media screen and (max-width: 576px) {
-  
-  .category-filter-box ul{
+  .privacy-policy-container {
+    text-align: center;
+  }
+
+  .privacy-policy-container li {
+    list-style: none;
+  }
+
+  .privacy-policy-container h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .privacy-policy-container h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+
+  .category-filter-box ul {
     padding-left: 0;
     flex-direction: column;
     margin-bottom: 0;
   }
+
   .blogs-container {
     padding: 40px 0 40px 0;
-}
+  }
+
   .category-tab {
     padding: 7px 20px;
     width: 100%;
     display: block;
     text-align: center;
-}
+  }
 }
