@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const page = () => {
 
   const [blogs, setBlog] = useState([])
+  const router = useRouter();
 
 
   const fetchBlogs = async () => {
@@ -69,8 +71,12 @@ const page = () => {
                   </button>
                 </td>
                 <td>
-                  {/* Edit button logic here */}
-                  <button className="btn btn-primary btn-sm">Edit</button>
+                  <button
+                    className="btn btn-primary btn-sm"
+                    onClick={() => router.push(`/admin/EditBlog?id=${blog._id}`)}
+                  >
+                    Edit
+                  </button>
                 </td>
               </tr>
             ))}
