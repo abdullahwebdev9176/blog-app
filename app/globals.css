@@ -316,6 +316,24 @@ body {
 .listing-table tr th, .listing-table tr td {
   vertical-align: middle;
 }
+.comments-section{
+  max-width: 450px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+.form-box{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.comments-header{
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-align: center;
+}
 @media screen and (max-width: 991px) {
   .footer-box {
     flex-direction: column;

@@ -55,8 +55,8 @@ const AddBlogPage = () => {
           <input type="text" className="form-control" placeholder="Enter blog Category" value={category} onChange={e => setCategory(e.target.value)} required />
         </div>
         <div className="mb-3">
-          <label className="mb-1">Content</label>
-          <textarea className="form-control" rows="5" placeholder="Write your blog content here" value={description} onChange={e => setDescription(e.target.value)} required></textarea>
+          <label className="mb-1">Description</label>
+          <textarea className="form-control" rows="5" placeholder="Write your blog Description here" value={description} onChange={e => setDescription(e.target.value)} required></textarea>
         </div>
         <div className="mb-3">
           <label className="mb-1">Author</label>
