@@ -209,12 +209,14 @@ body {
   color: black;
   font-weight: 500;
 }
-.admin-blog-header{
+
+.admin-blog-header {
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 20px;
   text-align: center;
 }
+
 .admin-header {
   font-size: 25px;
   line-height: normal;
@@ -313,27 +315,33 @@ body {
   margin-top: 20px;
   margin-bottom: 10px;
 }
-.listing-table tr th, .listing-table tr td {
+
+.listing-table tr th,
+.listing-table tr td {
   vertical-align: middle;
 }
-.comments-section{
+
+.comments-section {
   max-width: 450px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
 }
-.form-box{
+
+.form-box {
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-bottom: 20px;
 }
-.comments-header{
+
+.comments-header {
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 20px;
   text-align: center;
 }
+
 @media screen and (max-width: 991px) {
   .footer-box {
     flex-direction: column;
@@ -379,10 +387,23 @@ body {
 }
 
 @media screen and (max-width: 576px) {
+  .details-container {
+    max-width: 100%;
+    margin: 60px auto;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .comments-section {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
   .privacy-policy-container {
     text-align: center;
   }
-  .privacy-policy-container ul{
+
+  .privacy-policy-container ul {
     padding-left: 0;
   }
 
