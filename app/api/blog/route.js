@@ -12,6 +12,22 @@ LoadDB().catch((error) => {
     console.error("Error connecting to the database:", error);
 });
 
+export async function DELETE(request) {
+  const blogId = request.nextUrl.searchParams.get("id");
+  if (!blogId) {
+    return NextResponse.json({ error: "Blog ID is required" }, { status: 400 });
+  }
+  try {
+    const deleted = await BlogModel.findByIdAndDelete(blogId);
+    if (!deleted) {
+      return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+    }
+    return NextResponse.json({ success: true, message: "Blog deleted successfully" });
+  } catch (error) {
+    return NextResponse.json({ error: "Failed to delete blog" }, { status: 500 });
+  }
+}
+
 export async function GET(request) {
 
     const blogId = request.nextUrl.searchParams.get("id");

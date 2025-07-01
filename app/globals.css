@@ -313,7 +313,9 @@ body {
   margin-top: 20px;
   margin-bottom: 10px;
 }
-
+.listing-table tr th, .listing-table tr td {
+  vertical-align: middle;
+}
 @media screen and (max-width: 991px) {
   .footer-box {
     flex-direction: column;
