@@ -73,7 +73,7 @@ const page = () => {
                 <td>
                   <button
                     className="btn btn-primary btn-sm"
-                    onClick={() => router.push(`/admin/EditBlog?id=${blog._id}`)}
+                    onClick={() => router.push(`/admin/EditBlog/${blog._id}`)}
                   >
                     Edit
                   </button>
