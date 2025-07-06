@@ -52,6 +52,11 @@ const Header = () => {
                 <li className="nav-item">
                   <Link href="/privacy-policy" className="nav-link">Privacy Policy</Link>
                 </li>
+
+                <li className="nav-item">
+                  <Link href="/admin" className="nav-link">Admin</Link>
+                </li>
+
               </ul>
             </div>
           </div>
