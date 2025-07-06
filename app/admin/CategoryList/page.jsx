@@ -3,10 +3,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useRouter } from "next/navigation";
 
 const CategoriesPage = () => {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(false);
+    const router= useRouter();
 
     // Fetch categories
     const fetchCategories = async () => {
@@ -32,7 +34,7 @@ const CategoriesPage = () => {
         if (!confirm('Are you sure you want to delete this category?')) return;
 
         try {
-            await axios.delete(`/api/categories/${id}`);
+            await axios.delete(`/api/categories?id=${id}`);
             toast.success('Category deleted successfully!');
             fetchCategories();
         } catch (error) {
@@ -66,7 +68,7 @@ const CategoriesPage = () => {
                                 <td>
                                     <button
                                         className="btn btn-sm btn-primary me-2"
-                                        onClick={() => toast.info('Edit functionality coming soon!')}
+                                        onClick={() => router.push(`/admin/EditCategory/${category._id}`)}
                                     >
                                         Edit
                                     </button>
