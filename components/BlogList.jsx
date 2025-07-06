@@ -8,9 +8,22 @@ const BlogList = () => {
   const [Blogs, setBlogData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const filteredBlogs = Blogs.filter((item) =>
-    menu === "All" ? true : item.category === menu
-  );
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const finalFilteredBlogs = Blogs.filter((item) => {
+    if (searchQuery.trim() !== "") {
+      // Jab search box me kuch likha hai -> bas search query par filter karo
+      return (
+        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.description.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    } else {
+      // Agar search box empty hai -> category (menu) ka filter lagao
+      return menu === "All" ? true : item.category.toLowerCase() === menu.toLowerCase();
+    }
+  });
+
 
   const fetchBlogs = async () => {
     setLoading(true);
@@ -37,6 +50,15 @@ const BlogList = () => {
 
   return (
     <section className='blogs-container'>
+
+      <input
+        type="text"
+        placeholder="Search blogs..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="form-control mb-4 searchBox"
+      />
+
       <div className='category-filter-box mb-5'>
         <ul>
           <li className={`category-tab ${menu === 'All' ? 'active' : ''}`} onClick={() => setMenu('All')}>All</li>
@@ -49,8 +71,8 @@ const BlogList = () => {
         <div className="row justify-content-center">
           {loading ? (
             <SkeletonLoader />
-          ) : filteredBlogs.length > 0 ? (
-            filteredBlogs.map((item) => (
+          ) : finalFilteredBlogs.length > 0 ? (
+            finalFilteredBlogs.map((item) => (
               <BlogItem id={item._id} key={item._id} image={item.image} title={item.title} description={item.description} category={item.category} />
             ))
           ) : (
