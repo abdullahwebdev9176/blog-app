@@ -14,7 +14,7 @@ const JoditEditor = dynamic(() => import("jodit-react"), {
 const AddBlogPage = () => {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
-  const [description, setDescription] = useState("");
+  // const [description, setDescription] = useState("");
   const [author, setAuthor] = useState("");
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -59,7 +59,15 @@ const AddBlogPage = () => {
       const formData = new FormData();
       formData.append("title", title);
       formData.append("category", category);
-      formData.append("description", description);
+      let descriptionValue = "";
+      if (editor.current) {
+        if (typeof editor.current.getEditorValue === "function") {
+          descriptionValue = editor.current.getEditorValue();
+        } else if (editor.current.value) {
+          descriptionValue = editor.current.value;
+        }
+      }
+      formData.append("description", descriptionValue);
       formData.append("author", author);
       if (image) formData.append("image", image);
 
@@ -68,7 +76,9 @@ const AddBlogPage = () => {
         toast.success("Blog submitted successfully!");
         setTitle("");
         setCategory("");
-        setDescription("");
+        if(editor.current && typeof editor.current.setEditorValue === "function") {
+          editor.current.setEditorValue("");
+        }
         setAuthor("");
         setImage("");
       }else{
@@ -98,9 +108,7 @@ const AddBlogPage = () => {
           <label className="mb-1">Description</label>
           <JoditEditor
             ref={editor}
-            value={description}
             config={config}
-            onChange={newContent => setDescription(newContent)}
           />
         </div>
         <div className="mb-3">

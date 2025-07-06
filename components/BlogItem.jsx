@@ -4,6 +4,12 @@ import { assets } from "@/Assets/assets"
 import Link from "next/link"
 import Image from "next/image"
 
+// Helper function to remove HTML tags from description
+function stripHtml(html) {
+  if (!html) return "";
+  return html.replace(/<[^>]+>/g, "");
+}
+
 const BlogItem = ({ title, image, description, category, id }) => {
     return (
         <>
@@ -15,10 +21,9 @@ const BlogItem = ({ title, image, description, category, id }) => {
                         </Link>
                     </div>
                     <div className="card-body d-flex flex-column">
-                        
                         <span className="category-title">{category}</span>
                         <h5 className="card-title">{title}</h5>
-                        <p className="card-text">{description}</p>
+                        <p className="card-text">{stripHtml(description)}</p>
                         <Link href={`/blogs/${id}`} className="blog-btn">
                             Read More <Image src={assets.arrow} className="ms-2" alt="" width={12} />
                         </Link>
