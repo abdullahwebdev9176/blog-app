@@ -24,6 +24,18 @@ const Sidebar = () => {
                 </li>
 
                 <li>
+                    <Link href="/admin/AddCategory">
+                        <Image src={assets.add_icon} alt="Add Category Icon" />
+                        Add Category</Link>
+                </li>
+
+                <li>
+                    <Link href="/admin/CategoryList">
+                        <Image src={assets.blog_icon} alt="Category List Icon" />
+                        Category List</Link>
+                </li>
+
+                <li>
                     <Link href="/admin/Subscription">
                         <Image src={assets.email_icon} alt="Subscription Icon" />
                         Subscription</Link>
