@@ -1,28 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import BlogItem from './BlogItem';
+import SkeletonLoader from './BLogPlaceholder';
 import { toast } from "react-toastify";
 
 const BlogList = () => {
   const [menu, setMenu] = useState("All");
   const [Blogs, setBlogData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const filteredBlogs = Blogs.filter((item) =>
     menu === "All" ? true : item.category === menu
   );
 
   const fetchBlogs = async () => {
+    setLoading(true);
     try {
       const response = await fetch('/api/blog');
       if (!response.ok) {
         toast.error('Failed to fetch blogs');
+        setLoading(false);
         return;
       } else {
         const data = await response.json();
-        // console.log(data.Blogs);
         setBlogData(data.Blogs);
       }
     } catch (error) {
       console.error('Error fetching blogs:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -42,7 +47,9 @@ const BlogList = () => {
       </div>
       <div className="container-fluid">
         <div className="row justify-content-center">
-          {filteredBlogs.length > 0 ? (
+          {loading ? (
+            <SkeletonLoader />
+          ) : filteredBlogs.length > 0 ? (
             filteredBlogs.map((item) => (
               <BlogItem id={item._id} key={item._id} image={item.image} title={item.title} description={item.description} category={item.category} />
             ))
