@@ -1,12 +1,20 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import dynamic from "next/dynamic";
+
+// Dynamically import Jodit with SSR disabled
+const JoditEditor = dynamic(() => import("jodit-react"), {
+  ssr: false,
+  loading: () => <div className="form-control" style={{minHeight: '400px'}}>Loading editor...</div>
+});
 
 const EditBlogPage = ({ params }) => {
   const router = useRouter();
   const blogId = params.id;
+  const editor = useRef(null);
 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
@@ -15,6 +23,36 @@ const EditBlogPage = ({ params }) => {
   const [image, setImage] = useState("");
   const [newImage, setNewImage] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // Jodit editor configuration
+  const config = {
+    readonly: false,
+    height: 400,
+    toolbar: true,
+    spellcheck: true,
+    language: "en",
+    toolbarButtonSize: "medium",
+    toolbarAdaptive: false,
+    showCharsCounter: true,
+    showWordsCounter: true,
+    showXPathInStatusbar: false,
+    askBeforePasteHTML: true,
+    askBeforePasteFromWord: true,
+    buttons: [
+      'source', '|',
+      'bold', 'strikethrough', 'underline', 'italic', '|',
+      'ul', 'ol', '|',
+      'outdent', 'indent', '|',
+      'font', 'fontsize', 'brush', 'paragraph', '|',
+      'image', 'video', 'table', 'link', '|',
+      'align', 'undo', 'redo', '|',
+      'hr', 'eraser', 'copyformat', '|',
+      'symbol', 'fullsize', 'print', 'about'
+    ],
+    uploader: {
+      insertImageAsBase64URI: true
+    }
+  };
 
   useEffect(() => {
     const fetchBlog = async () => {
@@ -71,7 +109,12 @@ const EditBlogPage = ({ params }) => {
         </div>
         <div className="mb-3">
           <label>Description</label>
-          <textarea className="form-control" rows="5" value={description} onChange={e => setDescription(e.target.value)} required></textarea>
+          <JoditEditor
+            ref={editor}
+            value={description}
+            config={config}
+            onChange={newContent => setDescription(newContent)}
+          />
         </div>
         <div className="mb-3">
           <label>Author</label>
