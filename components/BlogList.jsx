@@ -12,14 +12,14 @@ const BlogList = () => {
 
   const finalFilteredBlogs = Blogs.filter((item) => {
     if (searchQuery.trim() !== "") {
-      // Jab search box me kuch likha hai -> bas search query par filter karo
+     
       return (
         item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.description.toLowerCase().includes(searchQuery.toLowerCase())
       );
     } else {
-      // Agar search box empty hai -> category (menu) ka filter lagao
+      
       return menu === "All" ? true : item.category.toLowerCase() === menu.toLowerCase();
     }
   });

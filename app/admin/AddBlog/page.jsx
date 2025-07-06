@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -18,6 +18,7 @@ const AddBlogPage = () => {
   const [author, setAuthor] = useState("");
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
   
   const editor = useRef(null);
   
@@ -92,6 +93,24 @@ const AddBlogPage = () => {
     }
   };
 
+  const fetchCategories = async () => {
+        try {
+            setLoading(true);
+            const res = await axios.get('/api/categories');
+            console.log(res.data)
+            setCategories(res.data.allCategories);
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to fetch categories');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchCategories();
+    }, []);
+
   return (
     <div>
       <h1 className="admin-blog-header">Add New Blog</h1>
@@ -102,8 +121,21 @@ const AddBlogPage = () => {
         </div>
         <div className="mb-3">
           <label className="mb-1">Category</label>
-          <input type="text" className="form-control" placeholder="Enter blog Category" value={category} onChange={e => setCategory(e.target.value)} required />
+          <select
+            className="form-control"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            required
+          >
+            <option value="">Select Category</option>
+            {categories.map((cat) => (
+              <option key={cat._id} value={cat._id}>
+                {cat.title}
+              </option>
+            ))}
+          </select>
         </div>
+
         <div className="mb-3">
           <label className="mb-1">Description</label>
           <JoditEditor
