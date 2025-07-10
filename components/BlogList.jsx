@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import BlogItem from './BlogItem';
-import SkeletonLoader from './BLogPlaceholder';
+import SkeletonLoader from './Placeholders/BlogPlaceholder';
 import { toast } from "react-toastify";
 
 const BlogList = () => {
