@@ -1,15 +1,21 @@
 "use client";
 
-import BlogList from "@/components/BlogList";
+import AboutAuthorSection from "@/components/Home-Components/AboutAuthor";
+import CategoriesSection from "@/components/Home-Components/CategoriesSection";
+import FeaturedArticles from "@/components/Home-Components/FeaturedArticles";
+import HeroSection from "@/components/Home-Components/HeroSection";
+import TestimonialsSection from "@/components/Home-Components/Testimonial";
+import TrendingPostsSection from "@/components/Home-Components/TrendingPost";
 
 export default function HomePage() {
   return (
-    <main className="container-fluid">
-      <div className="row">
-        <div className="col-xl-10 mx-auto">
-            <BlogList />
-        </div>
-      </div>
-    </main>
+    <>
+      <HeroSection />
+      <FeaturedArticles />
+      <CategoriesSection />
+      <TrendingPostsSection />
+      <AboutAuthorSection />
+      <TestimonialsSection />
+    </>
   );
 }

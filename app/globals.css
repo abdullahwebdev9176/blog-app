@@ -357,6 +357,149 @@ body {
   margin: 0 auto; 
 }
 
+/* Home page css start here */
+
+.hero-section {
+  position: relative;
+  background-image: url('../Assets/home-hero-images.jpeg'); /* ✅ apni image ka path yahan do */
+  background-size: cover;
+  background-position: center;
+  height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+}
+
+.hero-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4); /* dark overlay for better text readability */
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 700px;
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+}
+
+.hero-content p {
+  font-size: 1.2rem;
+}
+
+.hero-content .btn-primary {
+  background: #28a745;
+  border: none;
+}
+
+.hero-content .btn-primary:hover {
+  background: #218838;
+}
+
+.category-card {
+  transition: transform 0.3s, box-shadow 0.3s;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.category-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+}
+
+.category-card .card-title {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.image-wrapper {
+  overflow: hidden;
+}
+
+.category-card img {
+  transition: transform 0.3s;
+}
+
+.category-card:hover img {
+  transform: scale(1.05);
+}
+.post-card {
+  transition: transform 0.3s, box-shadow 0.3s;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.post-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+}
+
+.image-wrapper {
+  overflow: hidden;
+}
+
+.post-card img {
+  transition: transform 0.3s;
+}
+
+.post-card:hover img {
+  transform: scale(1.05);
+}
+
+.post-card .card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.post-card .btn-outline-primary {
+  border-radius: 20px;
+  padding: 6px 20px;
+}
+.about-author-section p {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.about-author-section .social-icons a:hover {
+  color: #0d6efd !important; /* Bootstrap primary blue on hover */
+}
+
+.about-author-section img {
+  transition: transform 0.3s;
+}
+
+.about-author-section img:hover {
+  transform: scale(1.05);
+}
+.testimonial-card {
+  transition: transform 0.3s, box-shadow 0.3s;
+  border-radius: 12px;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+}
+
+.testimonial-text {
+  font-style: italic;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.testimonials-section img {
+  transition: transform 0.3s;
+}
+
+.testimonials-section img:hover {
+  transform: scale(1.08);
+}
+
 @media screen and (max-width: 991px) {
   .footer-box {
     flex-direction: column;
