@@ -1,20 +1,19 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import dynamic from "next/dynamic";
 
-// Dynamically import Jodit with SSR disabled
+// Dynamically import Jodit editor
 const JoditEditor = dynamic(() => import("jodit-react"), {
   ssr: false,
-  loading: () => <div className="form-control" style={{minHeight: '400px'}}>Loading editor...</div>
+  loading: () => <div className="form-control" style={{ minHeight: '400px' }}>Loading editor...</div>
 });
 
 const EditBlogPage = ({ params }) => {
   const router = useRouter();
   const blogId = params.id;
-  const editor = useRef(null);
 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
@@ -22,33 +21,13 @@ const EditBlogPage = ({ params }) => {
   const [author, setAuthor] = useState("");
   const [image, setImage] = useState("");
   const [newImage, setNewImage] = useState(null);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Jodit editor configuration
   const config = {
     readonly: false,
     height: 400,
-    toolbar: true,
-    spellcheck: true,
-    language: "en",
-    toolbarButtonSize: "medium",
-    toolbarAdaptive: false,
-    showCharsCounter: true,
-    showWordsCounter: true,
-    showXPathInStatusbar: false,
-    askBeforePasteHTML: true,
-    askBeforePasteFromWord: true,
-    buttons: [
-      'source', '|',
-      'bold', 'strikethrough', 'underline', 'italic', '|',
-      'ul', 'ol', '|',
-      'outdent', 'indent', '|',
-      'font', 'fontsize', 'brush', 'paragraph', '|',
-      'image', 'video', 'table', 'link', '|',
-      'align', 'undo', 'redo', '|',
-      'hr', 'eraser', 'copyformat', '|',
-      'symbol', 'fullsize', 'print', 'about'
-    ],
+    placeholder: "Write your blog content here...",
     uploader: {
       insertImageAsBase64URI: true
     }
@@ -59,16 +38,37 @@ const EditBlogPage = ({ params }) => {
       try {
         const response = await axios.get(`/api/blog?id=${blogId}`);
         const blog = response.data.blog;
+
         setTitle(blog.title || "");
-        setCategory(blog.category || "");
         setDescription(blog.description || "");
         setAuthor(blog.author || "");
         setImage(blog.image || "");
+
+        if (blog.category && blog.category._id) {
+          setCategory(blog.category._id);
+        } else if (blog.category) {
+          setCategory(blog.category);
+        } else {
+          setCategory("");
+        }
       } catch (err) {
         toast.error("Failed to fetch blog data");
       }
     };
-    if (blogId) fetchBlog();
+
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get('/api/categories');
+        setCategories(res.data.allCategories);
+      } catch (error) {
+        toast.error("Failed to fetch categories");
+      }
+    };
+
+    if (blogId) {
+      fetchBlog();
+      fetchCategories();
+    }
   }, [blogId]);
 
   const handleSubmit = async (e) => {
@@ -83,13 +83,15 @@ const EditBlogPage = ({ params }) => {
       if (newImage) {
         formData.append("image", newImage);
       }
+
       await axios.put(`/api/blog?id=${blogId}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: { "Content-Type": "multipart/form-data" },
       });
+
       toast.success("Blog updated successfully!");
       router.push("/admin/BlogList");
     } catch (err) {
-      toast.error("Failed to update blog");
+      toast.error(err.response?.data?.error || "Failed to update blog");
     } finally {
       setLoading(false);
     }
@@ -101,28 +103,50 @@ const EditBlogPage = ({ params }) => {
       <form onSubmit={handleSubmit} encType="multipart/form-data">
         <div className="mb-3">
           <label>Title</label>
-          <input type="text" className="form-control" value={title} onChange={e => setTitle(e.target.value)} required />
+          <input
+            type="text"
+            className="form-control"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
         </div>
         <div className="mb-3">
           <label>Category</label>
-          <input type="text" className="form-control" value={category} onChange={e => setCategory(e.target.value)} required />
+          <select
+            className="form-control"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            required
+          >
+            <option value="">{category}</option>
+            {categories.map((cat) => (
+              <option key={cat._id} value={cat.title}>
+                {cat.title}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="mb-3">
           <label>Description</label>
           <JoditEditor
-            ref={editor}
             value={description}
             config={config}
-            onChange={newContent => setDescription(newContent)}
+            onBlur={(newContent) => setDescription(newContent)}
           />
         </div>
         <div className="mb-3">
           <label>Author</label>
-          <input type="text" className="form-control" value={author} onChange={e => setAuthor(e.target.value)} required />
+          <input
+            type="text"
+            className="form-control"
+            value={author}
+            onChange={(e) => setAuthor(e.target.value)}
+            required
+          />
         </div>
         <div className="mb-3">
           <label>Current Image</label><br />
-          {/* Show preview of new image if selected, otherwise show old image */}
           {newImage ? (
             <img
               src={URL.createObjectURL(newImage)}
@@ -138,10 +162,12 @@ const EditBlogPage = ({ params }) => {
             type="file"
             className="form-control"
             accept="image/*"
-            onChange={e => setNewImage(e.target.files[0])}
+            onChange={(e) => setNewImage(e.target.files[0])}
           />
         </div>
-        <button type="submit" className="btn btn-primary" disabled={loading}>{loading ? "Updating..." : "Update Blog"}</button>
+        <button type="submit" className="btn btn-primary" disabled={loading}>
+          {loading ? "Updating..." : "Update Blog"}
+        </button>
       </form>
     </div>
   );
