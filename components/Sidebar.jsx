@@ -12,6 +12,12 @@ const Sidebar = () => {
 
 
                 <li>
+                    <Link href="/admin/PostsOverview">
+                        <Image src={assets.blog_icon} alt="Posts Overview Icon" />
+                        Posts Overview</Link>
+                </li>
+
+                <li>
                     <Link href="/admin/AddBlog">
                         <Image src={assets.add_icon} alt="Add Blog Icon" />
                         Add Blog</Link>
