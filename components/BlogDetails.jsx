@@ -42,6 +42,34 @@ const BlogDetails = ({ blog }) => {
         }
     }, [blog._id]);
 
+    // Increment view count for the blog
+    useEffect(() => {
+        const viewedBlogs = JSON.parse(localStorage.getItem("viewedBlogs")) || [];
+
+        if (!viewedBlogs.includes(blog._id)) {
+            axios.patch("/api/blog", { blogId: blog._id })
+                .then(() => {
+                    viewedBlogs.push(blog._id);
+                    localStorage.setItem("viewedBlogs", JSON.stringify(viewedBlogs));
+                })
+                .catch(err => console.error("Error updating views:", err));
+        }
+    }, [blog._id]);
+
+    // Fetch comments count
+    useEffect(() => {
+        const fetchCommentsCount = async () => {
+            try {
+                const res = await axios.get(`/api/comments?blogId=${blog._id}`);
+                setComments(res.data.comments || []);
+            } catch (error) {
+                console.error("Error fetching comments:", error);
+            }
+        };
+
+        if (blog._id) fetchCommentsCount();
+    }, [blog._id]);
+
     // Handle new comment submit
     const handleComment = async (e) => {
         e.preventDefault();
