@@ -46,7 +46,9 @@ const AddBlogPage = () => {
 
       const response = await axios.post("/api/blog", formData);
 
-      if (response.data.succes) {
+      console.log("API Response:", response.data);
+
+      if (response.data.success) {
         toast.success("Blog submitted successfully!");
         setTitle("");
         setCategory("");
@@ -57,7 +59,7 @@ const AddBlogPage = () => {
         toast.error("Failed to submit blog");
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error in handleSubmit:", error);
       toast.error(error.response?.data?.error || error.message || "Something went wrong");
     } finally {
       setLoading(false);

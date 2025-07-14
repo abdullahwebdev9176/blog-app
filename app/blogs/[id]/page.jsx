@@ -8,6 +8,7 @@ const Page = ({ params }) => {
   const actualParams = typeof params.then === 'function' ? use(params) : params;
   const id = actualParams.id;
   const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchBlogData = async (id) => {
     try {
@@ -16,10 +17,12 @@ const Page = ({ params }) => {
         throw new Error('Failed to fetch blog data');
       }
       const result = await response.json();
-      console.log(result.blog)
+      console.log(result.blog);
       setData(result.blog);
     } catch (error) {
       console.error('Error fetching blog data:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -28,6 +31,14 @@ const Page = ({ params }) => {
       fetchBlogData(id);
     }
   }, [id]);
+
+  if (loading) {
+    return <p>Loading blog details...</p>;
+  }
+
+  if (!data) {
+    return <p>Blog not found.</p>;
+  }
 
   return <BlogDetails blog={data} />;
 };

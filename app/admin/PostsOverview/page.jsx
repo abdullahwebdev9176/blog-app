@@ -7,11 +7,13 @@ import axios from "axios";
 const page = () => {
 
   const [blogs, setBlog] = useState([])
+  const [commentsCount, setCommentsCount] = useState({});
 
   const fetchBlogs = async () => {
     try {
       const response = await axios.get('/api/blog');
       setBlog(response.data);
+      console.log("Blogs:", response.data);
     } catch (error) {
       toast.error('Failed to fetch blogs');
     }
@@ -20,6 +22,25 @@ const page = () => {
   useEffect(() => {
     fetchBlogs()
   }, [])
+
+  useEffect(() => {
+    const fetchCommentsCount = async () => {
+        try {
+            const res = await axios.get("/api/comments");
+            const allComments = res.data.comments || [];
+            console.log("All Comments:", allComments);
+            const commentsCountByBlog = allComments.reduce((acc, comment) => {
+                acc[comment.blogId] = (acc[comment.blogId] || 0) + 1;
+                return acc;
+            }, {});
+            setCommentsCount(commentsCountByBlog);
+        } catch (error) {
+            console.error("Error fetching comments count:", error);
+        }
+    };
+
+    fetchCommentsCount();
+}, []);
 
   return (
     <div className="posts-overview-container">
@@ -44,7 +65,7 @@ const page = () => {
                 <td>{blog.title}</td>
                 <td>{blog.views || 0}</td>
                 <td>{blog.likes || 0}</td>
-                <td>{blog.comments || 0}</td>
+                <td>{commentsCount[blog._id] || 0}</td>
                 <td>
                   <span className={`badge ${blog.status === 'published' ? 'badge-success' : 'badge-warning'}`}>
                     {blog.status || 'published'}

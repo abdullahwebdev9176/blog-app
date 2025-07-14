@@ -118,38 +118,47 @@ export async function POST(request) {
         }
     } else if (contentType.includes("multipart/form-data")) {
         // Handle blog creation
-        const formData = await request.formData();
+        try {
+            const formData = await request.formData();
+            console.log("Received formData:", Array.from(formData.entries()));
 
-        const timestamp = Date.now();
-        const image = formData.get("image");
-        if (!image) {
-            return NextResponse.json({ error: "No image uploaded" }, { status: 400 });
+            const timestamp = Date.now();
+            const image = formData.get("image");
+            if (!image) {
+                console.error("No image uploaded");
+                return NextResponse.json({ error: "No image uploaded" }, { status: 400 });
+            }
+            const imageByteData = await image.arrayBuffer();
+            const buffer = Buffer.from(imageByteData);
+
+            const path = `./public/${timestamp}_${image.name}`;
+            await writeFile(path, buffer);
+
+            const imageUrl = `/${timestamp}_${image.name}`;
+
+            console.log("Image URL:", imageUrl);
+
+            const blogData = {
+                title: formData.get("title"),
+                description: formData.get("description"),
+                image: imageUrl,
+                category: formData.get("category"),
+                author: formData.get("author"),
+            };
+
+            console.log("Blog data to be saved:", blogData);
+
+            await BlogModel.create(blogData);
+
+            return NextResponse.json({
+                success: true,
+                message: "Blog created successfully",
+                data: blogData
+            });
+        } catch (error) {
+            console.error("Error creating blog:", error);
+            return NextResponse.json({ error: "Failed to create blog" }, { status: 500 });
         }
-        const imageByteData = await image.arrayBuffer();
-        const buffer = Buffer.from(imageByteData);
-
-        const path = `./public/${timestamp}_${image.name}`;
-        await writeFile(path, buffer);
-
-        const imageUrl = `/${timestamp}_${image.name}`;
-
-        console.log(imageUrl);
-
-        const blogData = {
-            title: formData.get("title"),
-            description: formData.get("description"),
-            image: imageUrl,
-            category: formData.get("category"),
-            author: formData.get("author"),
-        };
-
-        await BlogModel.create(blogData);
-
-        return NextResponse.json({
-            success: true,
-            message: "Blog created successfully",
-            data: blogData
-        });
     } else {
         return NextResponse.json({ error: "Unsupported content type" }, { status: 400 });
     }

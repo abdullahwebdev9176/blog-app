@@ -7,7 +7,10 @@ import axios from "axios";
 import "./BlogDetails.css";
 
 const BlogDetails = ({ blog }) => {
-    if (!blog) return <p>Loading...</p>;
+    if (!blog) {
+        console.error("Blog prop is missing or undefined.");
+        return <p>Loading...</p>;
+    }
 
     // Comment section state
     const [comments, setComments] = useState([]);
@@ -19,6 +22,10 @@ const BlogDetails = ({ blog }) => {
     // Like state
     const [likes, setLikes] = useState(blog.likes || 0);
     const [liked, setLiked] = useState(false);
+
+    useEffect(() => {
+        console.log("Blog data on load:", blog);
+    }, [blog]);
 
     // Fetch comments for this blog
     useEffect(() => {
@@ -109,16 +116,25 @@ const BlogDetails = ({ blog }) => {
     return (
         <>
             <div className="details-container">
-                <div className="blog-details-img">
-                    <img src={blog.image} alt={blog.title} className="blog-image" />
-                </div>
+                {/* Defensive check for blog.image */}
+                {blog.image ? (
+                    <div className="blog-details-img">
+                        <img src={blog.image} alt={blog.title} className="blog-image" />
+                    </div>
+                ) : (
+                    <p>No image available for this blog.</p>
+                )}
+
                 <div className="blog-content">
                     <p>
-                        <b>Category:</b> {blog.category} <br />
-                        <b>Author:</b> {blog.author}
+                        <b>Category:</b> {blog.category || "Unknown"} <br />
+                        <b>Author:</b> {blog.author || "Unknown"}
                     </p>
-                    <h2>{blog.title}</h2>
-                    <div className="blog-description" dangerouslySetInnerHTML={{ __html: blog.description }} />
+                    <h2>{blog.title || "Untitled Blog"}</h2>
+                    <div
+                        className="blog-description"
+                        dangerouslySetInnerHTML={{ __html: blog.description || "No description available." }}
+                    />
                 </div>
 
                 {/* Stats Bar */}
@@ -129,7 +145,7 @@ const BlogDetails = ({ blog }) => {
                             {`Likes ${likes}`}
                         </button>
                     </div>
-                    <div><FontAwesomeIcon icon={faEye} /> {blog.views} Views</div>
+                    <div><FontAwesomeIcon icon={faEye} /> {blog.views || 0} Views</div>
                     <div><FontAwesomeIcon icon={faComment} /> {comments.length} Comments</div>
                 </div>
             </div>
@@ -164,7 +180,7 @@ const BlogDetails = ({ blog }) => {
                 <div>
                     {comments.length === 0 && <p className="no-comments">No comments yet.</p>}
                     {comments.map(c => (
-                        <div key={c.id} className="comment-item">
+                        <div key={c._id || c.id} className="comment-item">
                             <b className="comment-author">{c.name}</b> <br /> <span className="comment-date">{new Date(c.createdAt).toLocaleString()}</span>
                             <div className="comment-text">{c.text}</div>
                         </div>
