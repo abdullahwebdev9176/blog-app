@@ -39,18 +39,21 @@ body {
 .blog-card:hover {
   transform: translateY(-5px);
 }
-.blog-card .card-title{
+
+.blog-card .card-title {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.blog-card .card-text{
+
+.blog-card .card-text {
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
 .blog-btn {
   display: inline-block;
   color: black;
@@ -352,16 +355,18 @@ body {
   margin-bottom: 20px;
   text-align: center;
 }
-.searchBox{
+
+.searchBox {
   max-width: 350px;
-  margin: 0 auto; 
+  margin: 0 auto;
 }
 
 /* Home page css start here */
 
 .hero-section {
   position: relative;
-  background-image: url('../Assets/home-hero-images.jpeg'); /* ✅ apni image ka path yahan do */
+  background-image: url('../Assets/home-hero-images.jpeg');
+  /* ✅ apni image ka path yahan do */
   background-size: cover;
   background-position: center;
   height: 90vh;
@@ -375,7 +380,8 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4); /* dark overlay for better text readability */
+  background: rgba(0, 0, 0, 0.4);
+  /* dark overlay for better text readability */
 }
 
 .hero-content {
@@ -428,6 +434,7 @@ body {
 .category-card:hover img {
   transform: scale(1.05);
 }
+
 .post-card {
   transition: transform 0.3s, box-shadow 0.3s;
   border-radius: 12px;
@@ -460,13 +467,15 @@ body {
   border-radius: 20px;
   padding: 6px 20px;
 }
+
 .about-author-section p {
   font-size: 1rem;
   line-height: 1.6;
 }
 
 .about-author-section .social-icons a:hover {
-  color: #0d6efd !important; /* Bootstrap primary blue on hover */
+  color: #0d6efd !important;
+  /* Bootstrap primary blue on hover */
 }
 
 .about-author-section img {
@@ -476,6 +485,7 @@ body {
 .about-author-section img:hover {
   transform: scale(1.05);
 }
+
 .testimonial-card {
   transition: transform 0.3s, box-shadow 0.3s;
   border-radius: 12px;
@@ -498,6 +508,13 @@ body {
 
 .testimonials-section img:hover {
   transform: scale(1.08);
+}
+
+.like-button {
+  outline: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
 }
 
 @media screen and (max-width: 991px) {

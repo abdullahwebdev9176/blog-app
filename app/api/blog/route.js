@@ -86,39 +86,71 @@ export async function GET(request) {
 
 
 export async function POST(request) {
+    const contentType = request.headers.get("content-type") || "";
 
-    const formData = await request.formData();
+    if (contentType.includes("application/json")) {
+        // Handle like/unlike functionality
+        const { blogId, action } = await request.json();
 
-    const timestamp = Date.now();
-    const image = formData.get("image");
-    if (!image) {
-        return NextResponse.json({ error: "No image uploaded" }, { status: 400 });
+        if (!blogId || !["like", "unlike"].includes(action)) {
+            return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+        }
+
+        try {
+            const blog = await BlogModel.findById(blogId);
+
+            if (!blog) {
+                return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+            }
+
+            if (action === "like") {
+                blog.likes += 1;
+            } else if (action === "unlike" && blog.likes > 0) {
+                blog.likes -= 1;
+            }
+
+            await blog.save();
+
+            return NextResponse.json({ success: true, likes: blog.likes });
+        } catch (error) {
+            console.error("Error toggling like:", error);
+            return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+        }
+    } else if (contentType.includes("multipart/form-data")) {
+        // Handle blog creation
+        const formData = await request.formData();
+
+        const timestamp = Date.now();
+        const image = formData.get("image");
+        if (!image) {
+            return NextResponse.json({ error: "No image uploaded" }, { status: 400 });
+        }
+        const imageByteData = await image.arrayBuffer();
+        const buffer = Buffer.from(imageByteData);
+
+        const path = `./public/${timestamp}_${image.name}`;
+        await writeFile(path, buffer);
+
+        const imageUrl = `/${timestamp}_${image.name}`;
+
+        console.log(imageUrl);
+
+        const blogData = {
+            title: formData.get("title"),
+            description: formData.get("description"),
+            image: imageUrl,
+            category: formData.get("category"),
+            author: formData.get("author"),
+        };
+
+        await BlogModel.create(blogData);
+
+        return NextResponse.json({
+            success: true,
+            message: "Blog created successfully",
+            data: blogData
+        });
+    } else {
+        return NextResponse.json({ error: "Unsupported content type" }, { status: 400 });
     }
-    const imageByteData = await image.arrayBuffer();
-    const buffer = Buffer.from(imageByteData);
-
-    const path = `./public/${timestamp}_${image.name}`;
-    await writeFile(path, buffer);
-
-    const imageUrl = `/${timestamp}_${image.name}`;
-
-    console.log(imageUrl);
-
-
-    const blogData = {
-        title: formData.get("title"),
-        description: formData.get("description"),
-        image: imageUrl,
-        category: formData.get("category"),
-        author: formData.get("author"),
-    };
-
-    await BlogModel.create(blogData);
-
-    return NextResponse.json({
-        succes: true,
-        message: "Blog created successfully",
-        data: blogData
-    });
-
 }
