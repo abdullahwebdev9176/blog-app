@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/config/db";
 import { NextResponse } from "next/server";
 import { writeFile } from "fs/promises";
 import { BlogModel } from "@/lib/models/BlogModel";
+import { sendNewPostNotification } from "@/lib/services/emailService";
 
 const LoadDB = async () => {
     await connectDB();
@@ -176,13 +177,63 @@ export async function POST(request) {
 
             console.log("Blog data to be saved:", blogData);
 
-            await BlogModel.create(blogData);
+            const newBlog = await BlogModel.create(blogData);
 
-            return NextResponse.json({
-                success: true,
-                message: "Blog created successfully",
-                data: blogData
-            });
+            // Send newsletter to all subscribers automatically for published posts
+            try {
+                console.log("Sending newsletter notification for new blog post...");
+                const emailResult = await sendNewPostNotification(newBlog);
+                
+                if (emailResult.success) {
+                    // Mark newsletter as sent
+                    newBlog.newsletterSent = true;
+                    newBlog.newsletterSentAt = new Date();
+                    await newBlog.save();
+                    
+                    console.log(`Newsletter sent successfully to ${emailResult.totalSent} subscribers`);
+                    
+                    return NextResponse.json({
+                        success: true,
+                        message: "Blog created successfully and newsletter sent to subscribers",
+                        data: {
+                            blog: blogData,
+                            newsletter: {
+                                sent: true,
+                                totalSent: emailResult.totalSent,
+                                totalFailed: emailResult.totalFailed
+                            }
+                        }
+                    });
+                } else {
+                    console.warn("Newsletter sending failed:", emailResult.error);
+                    
+                    return NextResponse.json({
+                        success: true,
+                        message: "Blog created successfully but newsletter sending failed",
+                        data: {
+                            blog: blogData,
+                            newsletter: {
+                                sent: false,
+                                error: emailResult.error
+                            }
+                        }
+                    });
+                }
+            } catch (emailError) {
+                console.error("Error sending newsletter:", emailError);
+                
+                return NextResponse.json({
+                    success: true,
+                    message: "Blog created successfully but newsletter sending encountered an error",
+                    data: {
+                        blog: blogData,
+                        newsletter: {
+                            sent: false,
+                            error: emailError.message
+                        }
+                    }
+                });
+            }
         } catch (error) {
             console.error("Error creating blog:", error);
             return NextResponse.json({ error: "Failed to create blog" }, { status: 500 });

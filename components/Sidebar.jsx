@@ -13,7 +13,8 @@ import {
     faComments, 
     faEnvelope,
     faHome,
-    faEdit
+    faEdit,
+    faPaperPlane
 } from "@fortawesome/free-solid-svg-icons"
 import "./Sidebar.css"
 
@@ -63,6 +64,12 @@ const Sidebar = () => {
             icon: faEnvelope,
             label: "Subscriptions",
             description: "Email subscriptions"
+        },
+        {
+            href: "/admin/Newsletter",
+            icon: faPaperPlane,
+            label: "Newsletter",
+            description: "Send notifications"
         }
     ];
 
