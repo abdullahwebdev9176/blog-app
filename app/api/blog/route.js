@@ -6,9 +6,15 @@ import { BlogModel } from "@/lib/models/BlogModel";
 import { sendNewPostNotification } from "@/lib/services/emailService";
 
 const LoadDB = async () => {
-    await connectDB();
+    try {
+        await connectDB();
+    } catch (error) {
+        console.error("Database connection failed:", error);
+        throw error;
+    }
 };
 
+// Ensure database connection before handling requests
 LoadDB().catch((error) => {
     console.error("Error connecting to the database:", error);
 });
@@ -115,6 +121,14 @@ export async function PATCH(request) {
 }
 
 export async function POST(request) {
+    // Ensure database connection
+    try {
+        await LoadDB();
+    } catch (dbError) {
+        console.error("Database connection error:", dbError);
+        return NextResponse.json({ error: "Database connection failed" }, { status: 500 });
+    }
+
     const contentType = request.headers.get("content-type") || "";
 
     if (contentType.includes("application/json")) {
@@ -151,33 +165,62 @@ export async function POST(request) {
             const formData = await request.formData();
             console.log("Received formData:", Array.from(formData.entries()));
 
-            const timestamp = Date.now();
+            // Validate required fields
+            const title = formData.get("title");
+            const description = formData.get("description");
+            const category = formData.get("category");
+            const author = formData.get("author");
             const image = formData.get("image");
+
+            if (!title || !description || !category || !author) {
+                console.error("Missing required fields");
+                return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+            }
+
             if (!image) {
                 console.error("No image uploaded");
                 return NextResponse.json({ error: "No image uploaded" }, { status: 400 });
             }
+
+            const timestamp = Date.now();
             const imageByteData = await image.arrayBuffer();
             const buffer = Buffer.from(imageByteData);
 
             const path = `./public/${timestamp}_${image.name}`;
-            await writeFile(path, buffer);
+            
+            try {
+                await writeFile(path, buffer);
+                console.log("Image saved successfully to:", path);
+            } catch (fileError) {
+                console.error("Error saving image:", fileError);
+                return NextResponse.json({ error: "Failed to save image" }, { status: 500 });
+            }
 
             const imageUrl = `/${timestamp}_${image.name}`;
 
             console.log("Image URL:", imageUrl);
 
             const blogData = {
-                title: formData.get("title"),
-                description: formData.get("description"),
+                title,
+                description,
                 image: imageUrl,
-                category: formData.get("category"),
-                author: formData.get("author"),
+                category,
+                author,
             };
 
             console.log("Blog data to be saved:", blogData);
 
-            const newBlog = await BlogModel.create(blogData);
+            let newBlog;
+            try {
+                newBlog = await BlogModel.create(blogData);
+                console.log("Blog created successfully:", newBlog._id);
+            } catch (dbError) {
+                console.error("Database error creating blog:", dbError);
+                return NextResponse.json({ 
+                    error: "Failed to save blog to database", 
+                    details: dbError.message 
+                }, { status: 500 });
+            }
 
             // Send newsletter to all subscribers automatically for published posts
             try {

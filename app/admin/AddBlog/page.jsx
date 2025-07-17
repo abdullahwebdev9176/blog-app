@@ -55,7 +55,14 @@ const AddBlogPage = () => {
         formData.append("image", image);
       }
 
-      const response = await axios.post("/api/blog", formData);
+      const response = await axios.post("/api/blog", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        timeout: 30000, // 30 second timeout
+      });
+
+      console.log("Response from server:", response.data);
 
       if (response.data.success) {
         toast.success("Blog post created successfully!");
@@ -69,11 +76,23 @@ const AddBlogPage = () => {
           fileInputRef.current.value = '';
         }
       } else {
-        toast.error("Failed to create blog post");
+        console.error("Server response indicates failure:", response.data);
+        toast.error(response.data.message || "Failed to create blog post");
       }
     } catch (error) {
       console.error("Error in handleSubmit:", error);
-      toast.error(error.response?.data?.error || error.message || "Something went wrong");
+      console.error("Error response data:", error.response?.data);
+      console.error("Error status:", error.response?.status);
+      
+      if (error.response?.data?.error) {
+        toast.error(error.response.data.error);
+      } else if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else if (error.message) {
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
