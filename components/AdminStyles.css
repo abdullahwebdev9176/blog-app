@@ -39,6 +39,9 @@
 }
 
 /* Modern Admin Layout */
+.desktop-header{
+    display: none;
+}
 .modern-admin-layout {
   display: flex;
   min-height: 100vh;

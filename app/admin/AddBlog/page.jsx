@@ -200,8 +200,8 @@ const AddBlogPage = () => {
                       src={imagePreview} 
                       alt="Preview" 
                       style={{ 
-                        maxWidth: '200px', 
-                        maxHeight: '200px', 
+                        maxWidth: '500px', 
+                        maxHeight: '500px', 
                         objectFit: 'cover',
                         borderRadius: 'var(--admin-radius-md)',
                         marginBottom: '1rem'
