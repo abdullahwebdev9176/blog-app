@@ -26,6 +26,8 @@ export async function POST(req) {
 
 export async function PUT(request) {
     try {
+        await connectDB();
+        
         const categoryId = request.nextUrl.searchParams.get("id");
        
         const body = await request.json();
@@ -52,6 +54,7 @@ export async function PUT(request) {
         }, { status: 200 });
 
     } catch (error) {
+        console.error('Error updating category:', error);
         return NextResponse.json({
             success: false,
             message: "Error updating category",
@@ -62,6 +65,8 @@ export async function PUT(request) {
 
 export async function DELETE(request) {
     try {
+        await connectDB();
+        
         const categoryId = request.nextUrl.searchParams.get("id");
         console.log(categoryId);
 
@@ -74,6 +79,7 @@ export async function DELETE(request) {
         }, { status: 200 });
 
     } catch (error) {
+        console.error('Error deleting category:', error);
         return NextResponse.json({
             success: false,
             message: "Error deleting category",
@@ -83,8 +89,18 @@ export async function DELETE(request) {
 }
 
 export async function GET(request) {
+    try {
+        await connectDB();
+        
+        const allCategories = await CategoriesModel.find({}).sort({ createdAt: -1 });
 
-    const allCategories = await CategoriesModel.find({}).sort({ createdAt: -1 });
-
-    return NextResponse.json({ allCategories })
+        return NextResponse.json({ allCategories });
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+        return NextResponse.json({
+            success: false,
+            message: "Error fetching categories",
+            error: error.message
+        }, { status: 500 });
+    }
 }

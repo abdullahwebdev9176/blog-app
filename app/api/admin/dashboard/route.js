@@ -3,6 +3,7 @@ import { BlogModel } from "@/lib/models/BlogModel";
 import { NextResponse } from "next/server";
 import CategoriesModel from '@/lib/models/CategoriesModel';
 import CommentModel from "@/lib/models/CommentModel";
+import { SubscriberModel } from "@/lib/models/SubscriberModel";
 
 const LoadDB = async () => {
     await connectDB();
@@ -18,10 +19,11 @@ export async function GET() {
         oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
 
         // Fetch all data
-        const [blogs, comments, categories] = await Promise.all([
+        const [blogs, comments, categories, subscribers] = await Promise.all([
             BlogModel.find({}).sort({ createdAt: -1 }),
             CommentModel.find({}).sort({ createdAt: -1 }),
-            CategoriesModel.find({}).sort({ createdAt: -1 })
+            CategoriesModel.find({}).sort({ createdAt: -1 }),
+            SubscriberModel.find({}).sort({ createdAt: -1 })
         ]);
 
         // Current month data
@@ -33,6 +35,9 @@ export async function GET() {
         );
         const currentMonthCategories = categories.filter(category =>
             new Date(category.createdAt) >= oneMonthAgo
+        );
+        const currentMonthSubscribers = subscribers.filter(subscriber =>
+            new Date(subscriber.createdAt) >= oneMonthAgo
         );
 
         // Previous month data (for comparison)
@@ -47,12 +52,17 @@ export async function GET() {
             const commentDate = new Date(comment.createdAt);
             return commentDate >= twoMonthsAgo && commentDate < oneMonthAgo;
         });
+        const previousMonthSubscribers = subscribers.filter(subscriber => {
+            const subscriberDate = new Date(subscriber.createdAt);
+            return subscriberDate >= twoMonthsAgo && subscriberDate < oneMonthAgo;
+        });
 
         // Calculate totals
         const totalBlogs = blogs.length;
         const totalComments = comments.length;
         const totalViews = blogs.reduce((sum, blog) => sum + (blog.views || 0), 0);
         const totalCategories = categories.length;
+        const totalSubscribers = subscribers.filter(sub => sub.status === 'active').length;
 
         // Calculate growth percentages
         const calculateGrowth = (current, previous) => {
@@ -62,6 +72,7 @@ export async function GET() {
 
         const blogGrowth = calculateGrowth(currentMonthBlogs.length, previousMonthBlogs.length);
         const commentGrowth = calculateGrowth(currentMonthComments.length, previousMonthComments.length);
+        const subscriberGrowth = calculateGrowth(currentMonthSubscribers.length, previousMonthSubscribers.length);
 
         // For views, calculate based on current month vs previous month
         const currentMonthViews = currentMonthBlogs.reduce((sum, blog) => sum + (blog.views || 0), 0);
@@ -91,23 +102,27 @@ export async function GET() {
                 totalComments,
                 totalViews,
                 totalCategories,
+                totalSubscribers,
                 growth: {
                     blogs: blogGrowth,
                     comments: commentGrowth,
                     views: viewGrowth,
-                    categories: categoryGrowth
+                    categories: categoryGrowth,
+                    subscribers: subscriberGrowth
                 },
                 monthlyData: {
                     currentMonth: {
                         blogs: currentMonthBlogs.length,
                         comments: currentMonthComments.length,
                         views: currentMonthViews,
-                        categories: currentMonthCategories.length
+                        categories: currentMonthCategories.length,
+                        subscribers: currentMonthSubscribers.length
                     },
                     previousMonth: {
                         blogs: previousMonthBlogs.length,
                         comments: previousMonthComments.length,
-                        views: previousMonthViews
+                        views: previousMonthViews,
+                        subscribers: previousMonthSubscribers.length
                     }
                 },
                 recentActivity: {
