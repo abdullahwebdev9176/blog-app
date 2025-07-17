@@ -199,20 +199,13 @@ const CommentsManagement = () => {
                                 </div>
                                 
                                 <div className="table-cell actions-cell">
-                                    <div className="action-buttons">
-                                        <button
-                                            onClick={() => setDeleteConfirm(comment._id)}
-                                            className="delete-btn"
-                                            title="Delete Comment"
-                                        >
-                                            <FontAwesomeIcon icon={faTrash} />
-                                        </button>
-                                        <div className="status-badge">
-                                            <span className={`status-indicator ${comment.status}`}>
-                                                {comment.status}
-                                            </span>
-                                        </div>
-                                    </div>
+                                    <button
+                                        onClick={() => setDeleteConfirm(comment._id)}
+                                        className="delete-btn"
+                                        title="Delete Comment"
+                                    >
+                                        <FontAwesomeIcon icon={faTrash} />
+                                    </button>
                                 </div>
                             </div>
                         ))}

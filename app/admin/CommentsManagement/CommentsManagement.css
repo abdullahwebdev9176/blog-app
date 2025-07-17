@@ -147,7 +147,7 @@
 
 .table-header {
     display: grid;
-    grid-template-columns: 2fr 1.5fr 3fr 1fr 120px;
+    grid-template-columns: 2fr 1.5fr 3fr 1fr 80px;
     background-color: #f8f9fa;
     border-bottom: 2px solid #dee2e6;
     font-weight: 600;
@@ -165,7 +165,7 @@
 
 .table-row {
     display: grid;
-    grid-template-columns: 2fr 1.5fr 3fr 1fr 120px;
+    grid-template-columns: 2fr 1.5fr 3fr 1fr 80px;
     border-bottom: 1px solid #dee2e6;
     transition: background-color 0.2s ease;
 }
@@ -256,15 +256,6 @@
 
 .actions-cell {
     justify-content: center;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.action-buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
 }
 
 .delete-btn {
@@ -274,41 +265,7 @@
     border-radius: 4px;
     cursor: pointer;
     background: transparent;
-    font-size: 12px;
-}
-
-.status-badge {
-    display: flex;
-    justify-content: center;
-}
-
-.status-indicator {
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.status-indicator.approved {
-    background-color: #d4edda;
-    color: #155724;
-}
-
-.status-indicator.pending {
-    background-color: #fff3cd;
-    color: #856404;
-}
-
-.status-indicator.rejected {
-    background-color: #f8d7da;
-    color: #721c24;
-}
-
-.status-indicator.spam {
-    background-color: #f5c6cb;
-    color: #721c24;
+    font-size: 14px;
 }
 
 .no-comments {
@@ -404,7 +361,7 @@
 @media (max-width: 1024px) {
     .table-header,
     .table-row {
-        grid-template-columns: 1fr 1fr 2fr 1fr 100px;
+        grid-template-columns: 1fr 1fr 2fr 1fr 60px;
     }
     
     .admin-header h1 {
