@@ -3,24 +3,15 @@
 import Image from "next/image"
 import Link from "next/link"
 import { assets } from "@/Assets/assets"
-import { useAuth } from "@/lib/context/AuthContext"
 import { useRouter } from "next/navigation"
 
 const Sidebar = () => {
-    const { logout, admin } = useAuth();
     const router = useRouter();
-
-    const handleLogout = async () => {
-        await logout();
-        router.push('/admin/login');
-    };
 
     return (
         <>
             <div className="admin-sidebar-box">
-                <div className="admin-user-info mb-3 p-3 border-bottom">
-                    <p className="mb-1">Welcome, <strong>{admin?.username}</strong></p>
-                </div>
+             
                 
                 <ul className="sidebar-list">
                     <li>

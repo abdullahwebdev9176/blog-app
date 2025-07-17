@@ -4,24 +4,18 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { assets } from "@/Assets/assets";
 import { useState } from 'react';
-import { useAuth } from '@/lib/context/AuthContext';
 import { useRouter } from 'next/navigation';
 
 const Header = () => {
 
   const [mobileHeader, setMobileHeader] = useState(false);
-  const { admin, logout } = useAuth();
   const router = useRouter();
 
   const toggleMobileHeader = () => {
     setMobileHeader(!mobileHeader);
   };
 
-  const handleLogout = async () => {
-    await logout();
-    setMobileHeader(false);
-    router.push('/admin/login');
-  };
+
 
   return (
     <>
@@ -45,40 +39,24 @@ const Header = () => {
               <span className="navbar-toggler-icon"></span>
             </button>            <div className="collapse navbar-collapse" id="navbarContent">
               <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
-                {admin ? (
-                  // Admin is logged in - show only logout
-                  <li className="nav-item">
-                    <button
-                      onClick={handleLogout}
-                      className="nav-link btn btn-link text-danger"
-                      style={{ textDecoration: 'none' }}
-                    >
-                      Logout
-                    </button>
-                  </li>
-                ) : (
-                  // Admin is not logged in - show all navigation
-                  <>
-                    <li className="nav-item">
-                      <Link href="/" className="nav-link">Home</Link>
-                    </li>
-                    <li className="nav-item">
-                      <Link href="/about" className="nav-link">About</Link>
-                    </li>
-                    <li className="nav-item">
-                      <Link href="/blog-posts" className="nav-link">Blog</Link>
-                    </li>
-                    <li className="nav-item">
-                      <Link href="/contact" className="nav-link">Contact</Link>
-                    </li>
-                    <li className="nav-item">
-                      <Link href="/privacy-policy" className="nav-link">Privacy Policy</Link>
-                    </li>
-                    <li className="nav-item">
-                      <Link href="/admin" className="nav-link">Admin</Link>
-                    </li>
-                  </>
-                )}
+                <li className="nav-item">
+                  <Link href="/" className="nav-link">Home</Link>
+                </li>
+                <li className="nav-item">
+                  <Link href="/about" className="nav-link">About</Link>
+                </li>
+                <li className="nav-item">
+                  <Link href="/blog-posts" className="nav-link">Blog</Link>
+                </li>
+                <li className="nav-item">
+                  <Link href="/contact" className="nav-link">Contact</Link>
+                </li>
+                <li className="nav-item">
+                  <Link href="/privacy-policy" className="nav-link">Privacy Policy</Link>
+                </li>
+                <li className="nav-item">
+                  <Link href="/admin" className="nav-link">Admin</Link>
+                </li>
               </ul>
             </div>
           </div>
