@@ -241,7 +241,7 @@ const BlogListPage = () => {
                           <span style={{ fontWeight: '500' }}>{blog.views || 0}</span>
                         </div>
                       </td>
-                      <td>{formatDate(blog.date || blog.createdAt)}</td>
+                      <td style={{whiteSpace: 'nowrap'}}>{formatDate(blog.date || blog.createdAt)}</td>
                       <td>
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                           <button

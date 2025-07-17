@@ -42,6 +42,9 @@
 .desktop-header{
     display: none;
 }
+footer.bg-dark{
+    display: none;
+}
 .modern-admin-layout {
   display: flex;
   min-height: 100vh;
@@ -330,6 +333,7 @@
   font-size: 0.75rem;
   font-weight: 500;
   text-transform: uppercase;
+  white-space: nowrap;
   letter-spacing: 0.025em;
 }
 
@@ -353,10 +357,6 @@
   color: var(--admin-info);
 }
 
-.admin-badge-secondary {
-  background-color: rgba(107, 114, 128, 0.1);
-  color: var(--admin-secondary);
-}
 
 /* Statistics Cards */
 .admin-stats-grid {
