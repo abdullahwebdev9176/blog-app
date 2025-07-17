@@ -35,46 +35,12 @@ export async function PUT(request) {
       updateData.author = formData.get("author");
       const image = formData.get("image");
       if (image && typeof image === "object" && image.name) {
-        try {
-          // Validate file type
-          const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-          if (!allowedTypes.includes(image.type)) {
-            return NextResponse.json({ 
-              error: "Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed." 
-            }, { status: 400 });
-          }
-
-          // Validate file size (10MB limit)
-          const maxSize = 10 * 1024 * 1024; // 10MB
-          if (image.size > maxSize) {
-            return NextResponse.json({ 
-              error: "File too large. Maximum size is 10MB." 
-            }, { status: 400 });
-          }
-
-          const timestamp = Date.now();
-          const imageByteData = await image.arrayBuffer();
-          const buffer = Buffer.from(imageByteData);
-          
-          // Create uploads directory if it doesn't exist
-          const { mkdir } = await import("fs/promises");
-          const { join } = await import("path");
-          const { existsSync } = await import("fs");
-          
-          const uploadsDir = join(process.cwd(), "public", "uploads");
-          if (!existsSync(uploadsDir)) {
-            await mkdir(uploadsDir, { recursive: true });
-          }
-
-          const filename = `${timestamp}_${image.name}`;
-          const filepath = join(uploadsDir, filename);
-          
-          await writeFile(filepath, buffer);
-          updateData.image = `/uploads/${filename}`;
-        } catch (fileError) {
-          console.error("Error saving image:", fileError);
-          return NextResponse.json({ error: "Failed to save image" }, { status: 500 });
-        }
+        const timestamp = Date.now();
+        const imageByteData = await image.arrayBuffer();
+        const buffer = Buffer.from(imageByteData);
+        const path = `./public/${timestamp}_${image.name}`;
+        await writeFile(path, buffer);
+        updateData.image = `/${timestamp}_${image.name}`;
       }
     } else {
       const body = await request.json();
@@ -216,50 +182,21 @@ export async function POST(request) {
                 return NextResponse.json({ error: "No image uploaded" }, { status: 400 });
             }
 
-            // Handle image upload
-            let imageUrl;
+            const timestamp = Date.now();
+            const imageByteData = await image.arrayBuffer();
+            const buffer = Buffer.from(imageByteData);
+
+            const path = `./public/${timestamp}_${image.name}`;
+            
             try {
-                // Validate file type
-                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-                if (!allowedTypes.includes(image.type)) {
-                    return NextResponse.json({ 
-                        error: "Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed." 
-                    }, { status: 400 });
-                }
-
-                // Validate file size (10MB limit)
-                const maxSize = 10 * 1024 * 1024; // 10MB
-                if (image.size > maxSize) {
-                    return NextResponse.json({ 
-                        error: "File too large. Maximum size is 10MB." 
-                    }, { status: 400 });
-                }
-
-                const timestamp = Date.now();
-                const imageByteData = await image.arrayBuffer();
-                const buffer = Buffer.from(imageByteData);
-
-                // Create uploads directory if it doesn't exist
-                const { mkdir } = await import("fs/promises");
-                const { join } = await import("path");
-                const { existsSync } = await import("fs");
-                
-                const uploadsDir = join(process.cwd(), "public", "uploads");
-                if (!existsSync(uploadsDir)) {
-                    await mkdir(uploadsDir, { recursive: true });
-                }
-
-                const filename = `${timestamp}_${image.name}`;
-                const filepath = join(uploadsDir, filename);
-                
-                await writeFile(filepath, buffer);
-                console.log("Image saved successfully to:", filepath);
-                
-                imageUrl = `/uploads/${filename}`;
+                await writeFile(path, buffer);
+                console.log("Image saved successfully to:", path);
             } catch (fileError) {
                 console.error("Error saving image:", fileError);
                 return NextResponse.json({ error: "Failed to save image" }, { status: 500 });
             }
+
+            const imageUrl = `/${timestamp}_${image.name}`;
 
             console.log("Image URL:", imageUrl);
 
