@@ -6,6 +6,7 @@ import FeaturedArticles from "@/components/Home-Components/FeaturedArticles";
 import HeroSection from "@/components/Home-Components/HeroSection";
 import TestimonialsSection from "@/components/Home-Components/Testimonial";
 import TrendingPostsSection from "@/components/Home-Components/TrendingPost";
+import NewsletterForm from "@/components/NewsletterForm";
 
 export default function HomePage() {
   return (
@@ -16,6 +17,7 @@ export default function HomePage() {
       <TrendingPostsSection />
       <AboutAuthorSection />
       <TestimonialsSection />
+      <NewsletterForm />
     </>
   );
 }
