@@ -15,9 +15,11 @@ const BlogDetails = ({ blog }) => {
     // Comment section state
     const [comments, setComments] = useState([]);
     const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
     const [text, setText] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
 
     // Like state
     const [likes, setLikes] = useState(blog.likes || 0);
@@ -35,7 +37,12 @@ const BlogDetails = ({ blog }) => {
         const fetchComments = async () => {
             try {
                 const res = await axios.get(`/api/comments?blogId=${blog._id}`);
-                setComments(res.data.comments || []);
+                const commentsData = res.data.comments || [];
+                // Sort comments by createdAt in descending order (latest first)
+                const sortedComments = commentsData.sort((a, b) => 
+                    new Date(b.createdAt) - new Date(a.createdAt)
+                );
+                setComments(sortedComments);
             } catch (error) {
                 console.error("Error fetching comments:", error);
                 setComments([]);
@@ -92,22 +99,66 @@ const BlogDetails = ({ blog }) => {
         e.preventDefault();
         setLoading(true);
         setError("");
+        setSuccess("");
+        
+        // Basic validation
+        if (!name.trim()) {
+            setError("Please enter your name.");
+            setLoading(false);
+            return;
+        }
+        
+        if (!text.trim()) {
+            setError("Please enter your comment.");
+            setLoading(false);
+            return;
+        }
+        
+        if (email && !isValidEmail(email)) {
+            setError("Please enter a valid email address.");
+            setLoading(false);
+            return;
+        }
+        
         try {
             const res = await fetch("/api/comments", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ blogId: blog._id, name, text })
+                body: JSON.stringify({ 
+                    blogId: blog._id, 
+                    name: name.trim(), 
+                    email: email.trim(),
+                    text: text.trim() 
+                })
             });
-            if (!res.ok) throw new Error("Failed to add comment");
+            
+            if (!res.ok) {
+                throw new Error("Failed to add comment");
+            }
+            
             const data = await res.json();
+            
+            // Add new comment to the beginning of the array (latest first)
             setComments([data.comment, ...comments]);
             setName("");
+            setEmail("");
             setText("");
-        } catch {
-            setError("Comment add nahi hua. Try again.");
+            setSuccess("Comment added successfully!");
+            
+            // Clear success message after 3 seconds
+            setTimeout(() => setSuccess(""), 3000);
+            
+        } catch (error) {
+            console.error("Error adding comment:", error);
+            setError("Failed to add comment. Please try again.");
         } finally {
             setLoading(false);
         }
+    };
+    
+    // Email validation helper function
+    const isValidEmail = (email) => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     };
 
     // Handle like button click
@@ -188,37 +239,91 @@ const BlogDetails = ({ blog }) => {
 
             {/* Comment Section */}
             <div className="comments-section">
-                <h3 className="comments-header">Comments</h3>
-                <form onSubmit={handleComment} className="form-box">
-                    <input
-                        type="text"
-                        placeholder="Your Name"
-                        value={name}
-                        className="form-control"
-                        onChange={e => setName(e.target.value)}
-                        required
-                    />
-                    <input
-                        type="text"
-                        placeholder="Your Comment"
-                        value={text}
-                        className="form-control"
-                        onChange={e => setText(e.target.value)}
-                        required
-                    />
-                    <button type="submit" className="btn-primary" disabled={loading}>
-                        {loading ? "Posting..." : "Add Comment"}
-                    </button>
-                </form>
-                {error && <div className="error-message">{error}</div>}
-                <div>
-                    {comments.length === 0 && <p className="no-comments">No comments yet.</p>}
-                    {comments.map(c => (
-                        <div key={c._id || c.id} className="comment-item">
-                            <b className="comment-author">{c.name}</b> <br /> <span className="comment-date">{new Date(c.createdAt).toLocaleString()}</span>
-                            <div className="comment-text">{c.text}</div>
+                <h3 className="comments-header">
+                    <FontAwesomeIcon icon={faComment} className="comment-icon" />
+                    Comments ({comments.length})
+                </h3>
+                
+                {/* Comment Form */}
+                <div className="comment-form-container">
+                    <h4 className="form-title">Leave a Comment</h4>
+                    <form onSubmit={handleComment} className="comment-form">
+                        <div className="form-row">
+                            <div className="form-group">
+                                <input
+                                    type="text"
+                                    placeholder="Your Name *"
+                                    value={name}
+                                    className="form-control"
+                                    onChange={e => setName(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <input
+                                    type="email"
+                                    placeholder="Your Email (Optional)"
+                                    value={email}
+                                    className="form-control"
+                                    onChange={e => setEmail(e.target.value)}
+                                />
+                            </div>
                         </div>
-                    ))}
+                        <div className="form-group">
+                            <textarea
+                                placeholder="Your Comment *"
+                                value={text}
+                                className="form-control comment-textarea"
+                                onChange={e => setText(e.target.value)}
+                                rows="4"
+                                required
+                            />
+                        </div>
+                        <button type="submit" className="btn-primary" disabled={loading}>
+                            {loading ? "Posting..." : "Post Comment"}
+                        </button>
+                    </form>
+                    
+                    {error && <div className="error-message">{error}</div>}
+                    {success && <div className="success-message">{success}</div>}
+                </div>
+                
+                {/* Comments List */}
+                <div className="comments-list">
+                    <h4 className="comments-list-title">
+                        {comments.length > 0 ? `${comments.length} Comments` : "No Comments Yet"}
+                    </h4>
+                    
+                    {comments.length === 0 ? (
+                        <div className="no-comments">
+                            <p>Be the first to comment on this blog post!</p>
+                        </div>
+                    ) : (
+                        <div className="comments-container">
+                            {comments.map((comment, index) => (
+                                <div key={comment._id || comment.id || index} className="comment-item">
+                                    <div className="comment-header">
+                                        <div className="comment-author">
+                                            <span className="author-name">{comment.name}</span>
+                                            {comment.email && (
+                                                <span className="author-email">({comment.email})</span>
+                                            )}
+                                        </div>
+                                        <div className="comment-date">
+                                            {new Date(comment.createdAt).toLocaleDateString('en-US', {
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            })}
+                                        </div>
+                                    </div>
+                                    <div className="comment-text">{comment.text}</div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </>

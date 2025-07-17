@@ -45,6 +45,12 @@ const Sidebar = () => {
                     </li>
 
                     <li>
+                        <Link href="/admin/CommentsManagement">
+                            <Image src={assets.email_icon} alt="Comments Management Icon" />
+                            Comments Management</Link>
+                    </li>
+
+                    <li>
                         <Link href="/admin/Subscription">
                             <Image src={assets.email_icon} alt="Subscription Icon" />
                             Subscription</Link>
