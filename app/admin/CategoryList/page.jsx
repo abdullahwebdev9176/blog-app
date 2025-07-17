@@ -11,7 +11,7 @@ import {
   faTrash, 
   faPlus,
   faTag,
-  faCalendarAlt,
+  faCalendar,
   faSearch,
   faSpinner
 } from '@fortawesome/free-solid-svg-icons';
@@ -148,7 +148,7 @@ const CategoriesPage = () => {
                                             Category Name
                                         </th>
                                         <th>
-                                            <FontAwesomeIcon icon={faCalendarAlt} style={{ marginRight: '0.5rem' }} />
+                                            <FontAwesomeIcon icon={faCalendar} style={{ marginRight: '0.5rem' }} />
                                             Created
                                         </th>
                                         <th>Actions</th>

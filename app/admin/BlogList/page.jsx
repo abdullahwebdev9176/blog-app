@@ -13,7 +13,7 @@ import {
   faPlus,
   faSearch,
   faFilter,
-  faCalendarAlt,
+  faCalendar,
   faUser,
   faTag
 } from '@fortawesome/free-solid-svg-icons';
@@ -184,7 +184,7 @@ const BlogListPage = () => {
                       Views
                     </th>
                     <th>
-                      <FontAwesomeIcon icon={faCalendarAlt} style={{ marginRight: '0.5rem' }} />
+                      <FontAwesomeIcon icon={faCalendar} style={{ marginRight: '0.5rem' }} />
                       Date
                     </th>
                     <th>Actions</th>

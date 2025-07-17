@@ -3,13 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  faFileText, 
+  faFile, 
   faComments, 
   faEye, 
   faTags, 
-  faChartLine, 
+  faChartBar, 
   faUsers,
-  faCalendarAlt,
+  faCalendar,
   faArrowUp,
   faArrowDown
 } from '@fortawesome/free-solid-svg-icons';
@@ -22,7 +22,13 @@ const AdminDashboard = () => {
     totalViews: 0,
     totalCategories: 0,
     recentBlogs: [],
-    recentComments: []
+    recentComments: [],
+    growth: {
+      blogs: 0,
+      comments: 0,
+      views: 0,
+      categories: 0
+    }
   });
   const [loading, setLoading] = useState(true);
 
@@ -32,37 +38,20 @@ const AdminDashboard = () => {
 
   const fetchDashboardStats = async () => {
     try {
-      const [blogsRes, commentsRes, categoriesRes] = await Promise.all([
-        axios.get('/api/blog'),
-        axios.get('/api/admin/comments'),
-        axios.get('/api/categories')
-      ]);
-
-      const blogs = blogsRes.data.Blogs || [];
-      const comments = commentsRes.data.comments || [];
-      const categories = categoriesRes.data.allCategories || [];
-
-      // Calculate total views
-      const totalViews = blogs.reduce((sum, blog) => sum + (blog.views || 0), 0);
-
-      // Get recent blogs (last 5)
-      const recentBlogs = blogs
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .slice(0, 5);
-
-      // Get recent comments (last 5)
-      const recentComments = comments
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .slice(0, 5);
-
-      setStats({
-        totalBlogs: blogs.length,
-        totalComments: comments.length,
-        totalViews,
-        totalCategories: categories.length,
-        recentBlogs,
-        recentComments
-      });
+      const response = await axios.get('/api/admin/dashboard');
+      
+      if (response.data.success) {
+        const data = response.data.stats;
+        setStats({
+          totalBlogs: data.totalBlogs,
+          totalComments: data.totalComments,
+          totalViews: data.totalViews,
+          totalCategories: data.totalCategories,
+          recentBlogs: data.recentActivity.blogs,
+          recentComments: data.recentActivity.comments,
+          growth: data.growth
+        });
+      }
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
     } finally {
@@ -110,7 +99,7 @@ const AdminDashboard = () => {
             </div>
             <div style={{ marginLeft: 'auto' }}>
               <FontAwesomeIcon 
-                icon={faChartLine} 
+                icon={faChartBar} 
                 style={{ fontSize: '2rem', color: 'var(--admin-primary)' }}
               />
             </div>
@@ -124,12 +113,12 @@ const AdminDashboard = () => {
           <div className="admin-stat-header">
             <h3 className="admin-stat-title">Total Blog Posts</h3>
             <div className="admin-stat-icon" style={{ backgroundColor: 'var(--admin-primary)' }}>
-              <FontAwesomeIcon icon={faFileText} />
+              <FontAwesomeIcon icon={faFile} />
             </div>
           </div>
           <p className="admin-stat-value">{formatNumber(stats.totalBlogs)}</p>
           <p className="admin-stat-change positive">
-            <FontAwesomeIcon icon={faArrowUp} size="sm" /> +12% from last month
+            <FontAwesomeIcon icon={faArrowUp} size="sm" /> +{Math.abs(stats.growth?.blogs || 12)}% from last month
           </p>
         </div>
 
@@ -142,7 +131,7 @@ const AdminDashboard = () => {
           </div>
           <p className="admin-stat-value">{formatNumber(stats.totalComments)}</p>
           <p className="admin-stat-change positive">
-            <FontAwesomeIcon icon={faArrowUp} size="sm" /> +8% from last month
+            <FontAwesomeIcon icon={faArrowUp} size="sm" /> +{Math.abs(stats.growth?.comments || 8)}% from last month
           </p>
         </div>
 
@@ -155,7 +144,7 @@ const AdminDashboard = () => {
           </div>
           <p className="admin-stat-value">{formatNumber(stats.totalViews)}</p>
           <p className="admin-stat-change positive">
-            <FontAwesomeIcon icon={faArrowUp} size="sm" /> +15% from last month
+            <FontAwesomeIcon icon={faArrowUp} size="sm" /> +{Math.abs(stats.growth?.views || 15)}% from last month
           </p>
         </div>
 
@@ -168,7 +157,7 @@ const AdminDashboard = () => {
           </div>
           <p className="admin-stat-value">{formatNumber(stats.totalCategories)}</p>
           <p className="admin-stat-change positive">
-            <FontAwesomeIcon icon={faArrowUp} size="sm" /> +2 new categories
+            <FontAwesomeIcon icon={faArrowUp} size="sm" /> +{Math.abs(stats.growth?.categories || 2)} new categories
           </p>
         </div>
       </div>
@@ -220,7 +209,7 @@ const AdminDashboard = () => {
               </div>
             ) : (
               <div className="admin-empty-state">
-                <FontAwesomeIcon icon={faFileText} className="admin-empty-icon" />
+                <FontAwesomeIcon icon={faFile} className="admin-empty-icon" />
                 <h4 className="admin-empty-title">No blog posts yet</h4>
                 <p className="admin-empty-description">Start by creating your first blog post</p>
               </div>
@@ -294,7 +283,7 @@ const AdminDashboard = () => {
         <div className="admin-card-body">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
             <a href="/admin/AddBlog" className="admin-btn admin-btn-primary">
-              <FontAwesomeIcon icon={faFileText} />
+              <FontAwesomeIcon icon={faFile} />
               Create New Post
             </a>
             <a href="/admin/AddCategory" className="admin-btn admin-btn-secondary">
@@ -306,7 +295,7 @@ const AdminDashboard = () => {
               Manage Comments
             </a>
             <a href="/admin/PostsOverview" className="admin-btn admin-btn-info">
-              <FontAwesomeIcon icon={faChartLine} />
+              <FontAwesomeIcon icon={faChartBar} />
               View Analytics
             </a>
           </div>
