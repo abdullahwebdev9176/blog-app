@@ -24,7 +24,7 @@ const Header = () => {
         <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
           <div className="container">
             <Link href="/" className="navbar-brand fw-bold text-primary">
-              MyBlog
+              <Image src={assets.officalLogo} alt="Logo" className='official-logo' />
             </Link>
 
             <button

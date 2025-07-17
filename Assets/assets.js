@@ -28,6 +28,7 @@ import blog_icon from './blog_icon.png'
 import add_icon from './add_icon.png'
 import email_icon from './email_icon.png'
 import upload_area from './upload_area.png'
+import officalLogo from './health-care-logo.png'
 
 export const assets = {
     facebook_icon,
@@ -44,7 +45,8 @@ export const assets = {
     blog_pic_1,
     blog_pic_2,
     blog_pic_3,
-    blog_pic_4
+    blog_pic_4,
+    officalLogo
     }
 
     export const blog_data = [{

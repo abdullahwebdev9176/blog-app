@@ -11,6 +11,11 @@ body {
   font-family: var(--font-roboto), sans-serif;
 }
 
+.official-logo{
+  max-width: 90px;
+  height: auto;
+  object-fit: contain;
+}
 
 .navbar {
   transition: all 0.3s ease-in-out;
