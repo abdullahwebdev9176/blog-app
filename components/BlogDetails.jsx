@@ -22,6 +22,9 @@ const BlogDetails = ({ blog }) => {
     // Like state
     const [likes, setLikes] = useState(blog.likes || 0);
     const [liked, setLiked] = useState(false);
+    
+    // View state
+    const [views, setViews] = useState(blog.views || 0);
 
     useEffect(() => {
         console.log("Blog data on load:", blog);
@@ -31,14 +34,17 @@ const BlogDetails = ({ blog }) => {
     useEffect(() => {
         const fetchComments = async () => {
             try {
-                const res = await fetch(`/api/comments?blogId=${blog._id}`);
-                const data = await res.json();
-                setComments(data.comments || []);
-            } catch {
+                const res = await axios.get(`/api/comments?blogId=${blog._id}`);
+                setComments(res.data.comments || []);
+            } catch (error) {
+                console.error("Error fetching comments:", error);
                 setComments([]);
             }
         };
-        if (blog._id) fetchComments();
+        
+        if (blog._id) {
+            fetchComments();
+        }
     }, [blog._id]);
 
     // Check localStorage for liked state
@@ -49,32 +55,36 @@ const BlogDetails = ({ blog }) => {
         }
     }, [blog._id]);
 
-    // Increment view count for the blog
+    // Increment view count for the blog (unique per user)
     useEffect(() => {
-        const viewedBlogs = JSON.parse(localStorage.getItem("viewedBlogs")) || [];
-
-        if (!viewedBlogs.includes(blog._id)) {
-            axios.patch("/api/blog", { blogId: blog._id })
-                .then(() => {
-                    viewedBlogs.push(blog._id);
-                    localStorage.setItem("viewedBlogs", JSON.stringify(viewedBlogs));
-                })
-                .catch(err => console.error("Error updating views:", err));
-        }
-    }, [blog._id]);
-
-    // Fetch comments count
-    useEffect(() => {
-        const fetchCommentsCount = async () => {
+        const incrementViewCount = async () => {
             try {
-                const res = await axios.get(`/api/comments?blogId=${blog._id}`);
-                setComments(res.data.comments || []);
+                const viewedBlogs = JSON.parse(localStorage.getItem("viewedBlogs")) || [];
+                
+                // Check if this blog has already been viewed by this user
+                if (!viewedBlogs.includes(blog._id)) {
+                    // Make API call to increment view count
+                    const response = await axios.patch("/api/blog", { blogId: blog._id });
+                    
+                    if (response.data.success) {
+                        // Update local state with new view count
+                        setViews(response.data.views);
+                        
+                        // Mark this blog as viewed in localStorage
+                        viewedBlogs.push(blog._id);
+                        localStorage.setItem("viewedBlogs", JSON.stringify(viewedBlogs));
+                        
+                        console.log(`View count updated for blog ${blog._id}: ${response.data.views}`);
+                    }
+                }
             } catch (error) {
-                console.error("Error fetching comments:", error);
+                console.error("Error updating view count:", error);
             }
         };
 
-        if (blog._id) fetchCommentsCount();
+        if (blog._id) {
+            incrementViewCount();
+        }
     }, [blog._id]);
 
     // Handle new comment submit
@@ -106,8 +116,26 @@ const BlogDetails = ({ blog }) => {
             const action = liked ? "unlike" : "like";
             const res = await axios.post("/api/blog", { blogId: blog._id, action });
 
-            setLikes(res.data.likes);
-            setLiked(!liked);
+            if (res.data.success) {
+                setLikes(res.data.likes);
+                setLiked(!liked);
+                
+                // Update localStorage to persist liked state
+                const likedBlogs = JSON.parse(localStorage.getItem("likedBlogs")) || [];
+                if (!liked) {
+                    // Adding like
+                    if (!likedBlogs.includes(blog._id)) {
+                        likedBlogs.push(blog._id);
+                    }
+                } else {
+                    // Removing like
+                    const index = likedBlogs.indexOf(blog._id);
+                    if (index > -1) {
+                        likedBlogs.splice(index, 1);
+                    }
+                }
+                localStorage.setItem("likedBlogs", JSON.stringify(likedBlogs));
+            }
         } catch (error) {
             console.error("Error toggling like:", error);
         }
@@ -145,8 +173,14 @@ const BlogDetails = ({ blog }) => {
                             {`Likes ${likes}`}
                         </button>
                     </div>
-                    <div><FontAwesomeIcon icon={faEye} /> {blog.views || 0} Views</div>
-                    <div><FontAwesomeIcon icon={faComment} /> {comments.length} Comments</div>
+                    <div className="view-count">
+                        <FontAwesomeIcon icon={faEye} /> 
+                        <span>{views} Views</span>
+                    </div>
+                    <div>
+                        <FontAwesomeIcon icon={faComment} /> 
+                        <span>{comments.length} Comments</span>
+                    </div>
                 </div>
             </div>
 

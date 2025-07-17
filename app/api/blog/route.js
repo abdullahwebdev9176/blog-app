@@ -85,6 +85,34 @@ export async function GET(request) {
 }
 
 
+export async function PATCH(request) {
+    const { blogId } = await request.json();
+    
+    if (!blogId) {
+        return NextResponse.json({ error: "Blog ID is required" }, { status: 400 });
+    }
+    
+    try {
+        const blog = await BlogModel.findById(blogId);
+        
+        if (!blog) {
+            return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+        }
+        
+        blog.views += 1;
+        await blog.save();
+        
+        return NextResponse.json({ 
+            success: true, 
+            views: blog.views,
+            message: "View count updated successfully" 
+        });
+    } catch (error) {
+        console.error("Error updating view count:", error);
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    }
+}
+
 export async function POST(request) {
     const contentType = request.headers.get("content-type") || "";
 
