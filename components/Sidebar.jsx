@@ -3,59 +3,103 @@
 import Image from "next/image"
 import Link from "next/link"
 import { assets } from "@/Assets/assets"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { 
+    faChartLine, 
+    faPlus, 
+    faList, 
+    faTags, 
+    faComments, 
+    faEnvelope,
+    faHome,
+    faEdit
+} from "@fortawesome/free-solid-svg-icons"
+import "./Sidebar.css"
 
 const Sidebar = () => {
     const router = useRouter();
+    const pathname = usePathname();
+
+    const menuItems = [
+        {
+            href: "/admin/PostsOverview",
+            icon: faChartLine,
+            label: "Posts Overview",
+            description: "View all posts analytics"
+        },
+        {
+            href: "/admin/AddBlog",
+            icon: faPlus,
+            label: "Add Blog",
+            description: "Create new blog post"
+        },
+        {
+            href: "/admin/BlogList",
+            icon: faList,
+            label: "Blog List",
+            description: "Manage all blog posts"
+        },
+        {
+            href: "/admin/AddCategory",
+            icon: faTags,
+            label: "Add Category",
+            description: "Create new category"
+        },
+        {
+            href: "/admin/CategoryList",
+            icon: faEdit,
+            label: "Category List",
+            description: "Manage categories"
+        },
+        {
+            href: "/admin/CommentsManagement",
+            icon: faComments,
+            label: "Comments",
+            description: "Manage user comments"
+        },
+        {
+            href: "/admin/Subscription",
+            icon: faEnvelope,
+            label: "Subscriptions",
+            description: "Email subscriptions"
+        }
+    ];
+
+    const isActiveRoute = (href) => {
+        return pathname === href;
+    };
 
     return (
         <>
-            <div className="admin-sidebar-box">
-             
+            <div className="modern-sidebar">
+                <div className="sidebar-header">
+                    <Link href="/admin" className="sidebar-brand">
+                        <FontAwesomeIcon icon={faHome} className="brand-icon" />
+                        <span className="brand-text">Admin Panel</span>
+                    </Link>
+                </div>
                 
-                <ul className="sidebar-list">
-                    <li>
-                        <Link href="/admin/PostsOverview">
-                            <Image src={assets.blog_icon} alt="Posts Overview Icon" />
-                            Posts Overview</Link>
-                    </li>
-
-                    <li>
-                        <Link href="/admin/AddBlog">
-                            <Image src={assets.add_icon} alt="Add Blog Icon" />
-                            Add Blog</Link>
-                    </li>
-
-                    <li>
-                        <Link href="/admin/BlogList">
-                            <Image src={assets.blog_icon} alt="Blog List Icon" />
-                            Blog List</Link>
-                    </li>
-
-                    <li>
-                        <Link href="/admin/AddCategory">
-                            <Image src={assets.add_icon} alt="Add Category Icon" />
-                            Add Category</Link>
-                    </li>
-
-                    <li>
-                        <Link href="/admin/CategoryList">
-                            <Image src={assets.blog_icon} alt="Category List Icon" />
-                            Category List</Link>
-                    </li>
-
-                    <li>
-                        <Link href="/admin/CommentsManagement">
-                            <Image src={assets.email_icon} alt="Comments Management Icon" />
-                            Comments Management</Link>
-                    </li>
-
-                    <li>
-                        <Link href="/admin/Subscription">
-                            <Image src={assets.email_icon} alt="Subscription Icon" />
-                            Subscription</Link>
-                    </li>
-                </ul>
+                <nav className="sidebar-nav">
+                    <ul className="nav-list">
+                        {menuItems.map((item) => (
+                            <li key={item.href} className="nav-item">
+                                <Link 
+                                    href={item.href}
+                                    className={`nav-link ${isActiveRoute(item.href) ? 'active' : ''}`}
+                                >
+                                    <div className="nav-icon">
+                                        <FontAwesomeIcon icon={item.icon} />
+                                    </div>
+                                    <div className="nav-content">
+                                        <span className="nav-label">{item.label}</span>
+                                        <span className="nav-description">{item.description}</span>
+                                    </div>
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                </nav>
             </div>
         </>
     )

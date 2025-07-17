@@ -2,22 +2,36 @@
 
 import Sidebar from "@/components/Sidebar";
 import { ToastContainer } from 'react-toastify';
+import '@/components/AdminStyles.css';
 
 export default function Layout({ children }) {
 
     return (
-
         <>
-            <div className="admin-layout">
-                <ToastContainer />
-                <div className="admin-layout-col-1">
-                    <Sidebar />
-                </div>
-                <div className="admin-layout-col-2">
-                    <div className="bg-dark text-white px-4 py-3">
-                        <h1 className="admin-header mb-0">Admin Dashboard</h1>
+            <div className="modern-admin-layout">
+                <ToastContainer 
+                    position="top-right"
+                    autoClose={3000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="light"
+                />
+                <Sidebar />
+                <div className="admin-main-content">
+                    <div className="admin-header">
+                        <div className="admin-header-content">
+                            <h1 className="admin-title">Admin Dashboard</h1>
+                            <div className="admin-header-actions">
+                                <span className="admin-badge admin-badge-success">Online</span>
+                            </div>
+                        </div>
                     </div>
-                    <div className="p-4">
+                    <div className="admin-page-container">
                         {children}
                     </div>
                 </div>
