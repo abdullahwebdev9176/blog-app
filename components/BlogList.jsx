@@ -7,6 +7,8 @@ const BlogList = () => {
   const [menu, setMenu] = useState("All");
   const [Blogs, setBlogData] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  console.log(Blogs)
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -73,7 +75,7 @@ const BlogList = () => {
             <SkeletonLoader />
           ) : finalFilteredBlogs.length > 0 ? (
             finalFilteredBlogs.map((item) => (
-              <BlogItem id={item._id} key={item._id} image={item.image} title={item.title} description={item.description} category={item.category} />
+              <BlogItem id={item._id} key={item._id} image={item.image} title={item.title} excerpt={item.excerpt} description={item.description} category={item.category} />
             ))
           ) : (
             <h6 className='text-center'>Blogs Not Found</h6>

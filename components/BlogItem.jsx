@@ -10,7 +10,7 @@ function stripHtml(html) {
   return html.replace(/<[^>]+>/g, "");
 }
 
-const BlogItem = ({ title, image, description, category, id }) => {
+const BlogItem = ({ title, image, excerpt, category, id }) => {
     return (
         <>
             <div className="col-md-4 mb-4">
@@ -23,7 +23,7 @@ const BlogItem = ({ title, image, description, category, id }) => {
                     <div className="card-body d-flex flex-column">
                         <span className="category-title">{category}</span>
                         <h5 className="card-title">{title}</h5>
-                        <p className="card-text">{stripHtml(description)}</p>
+                        <p className="card-text">{excerpt}</p>
                         <Link href={`/blogs/${id}`} className="blog-btn">
                             Read More <Image src={assets.arrow} className="ms-2" alt="" width={12} />
                         </Link>
