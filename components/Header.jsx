@@ -85,52 +85,36 @@ const Header = () => {
         <>
           <div className="mobile-header-list">
             <ul>
-              {admin ? (
-                // Admin is logged in - show only logout
-                <li>
-                  <button
-                    onClick={handleLogout}
-                    className="custom-nav-link btn btn-link text-danger"
-                    style={{ textDecoration: 'none', border: 'none', background: 'none' }}
-                  >
-                    Logout
-                  </button>
-                </li>
-              ) : (
-                // Admin is not logged in - show all navigation
-                <>
-                  <li>
-                    <Link href="/" className="custom-nav-link" onClick={() => setMobileHeader(false)}>
-                      Home
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/about" className="custom-nav-link" onClick={() => setMobileHeader(false)}>
-                      About
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/blog-posts" className="custom-nav-link" onClick={() => setMobileHeader(false)}>
-                      Blog
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/contact" className="custom-nav-link" onClick={() => setMobileHeader(false)}>
-                      Contact
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/privacy-policy" className="custom-nav-link" onClick={() => setMobileHeader(false)}>
-                      Privacy Policy
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/admin" className="custom-nav-link" onClick={() => setMobileHeader(false)}>
-                      Admin
-                    </Link>
-                  </li>
-                </>
-              )}
+              <li>
+                <Link href="/" className="custom-nav-link" onClick={() => setMobileHeader(false)}>
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="custom-nav-link" onClick={() => setMobileHeader(false)}>
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog-posts" className="custom-nav-link" onClick={() => setMobileHeader(false)}>
+                  Blog
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="custom-nav-link" onClick={() => setMobileHeader(false)}>
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacy-policy" className="custom-nav-link" onClick={() => setMobileHeader(false)}>
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/admin" className="custom-nav-link" onClick={() => setMobileHeader(false)}>
+                  Admin
+                </Link>
+              </li>
             </ul>
           </div>
         </>
