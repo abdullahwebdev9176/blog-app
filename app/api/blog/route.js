@@ -213,6 +213,13 @@ export async function POST(request) {
             // Upload image to Cloudinary
             let imageUrl, imagePublicId;
             try {
+                console.log('Starting Cloudinary upload process...');
+                console.log('File details:', {
+                    name: image.name,
+                    size: image.size,
+                    type: image.type
+                });
+
                 const cloudinaryResult = await uploadToCloudinary(image, {
                     folder: 'blog-images',
                     transformation: [
@@ -227,7 +234,15 @@ export async function POST(request) {
                 console.log("Image uploaded to Cloudinary successfully:", imageUrl);
             } catch (uploadError) {
                 console.error("Error uploading to Cloudinary:", uploadError);
-                return NextResponse.json({ error: "Failed to upload image to Cloudinary" }, { status: 500 });
+                console.error("Upload error details:", {
+                    message: uploadError.message,
+                    stack: uploadError.stack,
+                    cause: uploadError.cause
+                });
+                return NextResponse.json({ 
+                    error: "Failed to upload image to Cloudinary",
+                    details: uploadError.message
+                }, { status: 500 });
             }
 
             console.log("Image URL:", imageUrl);
