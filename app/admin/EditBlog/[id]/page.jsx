@@ -26,8 +26,10 @@ const EditBlogPage = ({ params }) => {
 
   const config = {
     readonly: false,
-    height: 400,
+    height: 500,
     placeholder: "Write your blog content here...",
+    
+    // Upload configuration
     uploader: {
       url: '/api/jodit-upload',
       format: 'json',
@@ -52,6 +54,156 @@ const EditBlogPage = ({ params }) => {
           msg: resp.error || ''
         };
       }
+    },
+
+    // Enable drag and drop
+    enableDragAndDropFileToEditor: true,
+    
+    // Paste options
+    askBeforePasteFromWord: false,
+    askBeforePasteHTML: false,
+    processPasteHTML: true,
+    
+    // Show counters
+    showCharsCounter: true,
+    showWordsCounter: true,
+    showXPathInStatusbar: false,
+
+    // Image settings
+    image: {
+      openOnDblClick: true,
+      editSrc: true,
+      editAlt: true,
+      editLink: true,
+      editSize: true,
+      resizer: true
+    },
+
+    // Table settings
+    table: {
+      selectionCellStyle: 'border: 1px double #1e88e5;'
+    },
+
+    // Enhanced toolbar with headings and blog essentials
+    buttons: [
+      // Text formatting
+      'bold', 'italic', 'underline', 'strikethrough', '|',
+      
+      // Headings - essential for blog structure
+      {
+        name: 'paragraph',
+        list: {
+          p: 'Normal',
+          h1: 'Heading 1',
+          h2: 'Heading 2',
+          h3: 'Heading 3',
+          h4: 'Heading 4',
+          h5: 'Heading 5',
+          h6: 'Heading 6'
+        }
+      },
+      '|',
+      
+      // Font options
+      'fontsize', 'brush', '|',
+      
+      // Lists - important for blog content
+      'ul', 'ol', '|',
+      
+      // Alignment
+      'left', 'center', 'right', 'justify', '|',
+      
+      // Quote - essential for blogs
+      'quote', '|',
+      
+      // Media insertion
+      'link', 'unlink', 'image', '|',
+      
+      // Code - useful for tech blogs
+      'source', '|',
+      
+      // Table - useful for data presentation
+      'table', '|',
+      
+      // Special elements
+      'hr', 'symbols', '|',
+      
+      // History
+      'undo', 'redo', '|',
+      
+      // View modes - preview is essential
+      'preview', 'fullsize', '|',
+      
+      // Additional utilities
+      'print', 'about'
+    ],
+
+    // Custom button configurations
+    controls: {
+      // Enhanced paragraph/heading control
+      paragraph: {
+        list: {
+          p: 'Normal Text',
+          h1: 'Heading 1 (Main Title)',
+          h2: 'Heading 2 (Section)',
+          h3: 'Heading 3 (Subsection)',
+          h4: 'Heading 4 (Minor Heading)',
+          h5: 'Heading 5 (Small Heading)',
+          h6: 'Heading 6 (Smallest Heading)'
+        }
+      },
+      
+      // Font size options
+      fontsize: {
+        list: {
+          '8': '8px',
+          '9': '9px',
+          '10': '10px',
+          '11': '11px',
+          '12': '12px',
+          '14': '14px (Default)',
+          '16': '16px',
+          '18': '18px',
+          '24': '24px',
+          '30': '30px',
+          '36': '36px',
+          '48': '48px',
+          '60': '60px',
+          '72': '72px'
+        }
+      }
+    },
+
+    // Preview settings
+    preview: true,
+    
+    // Events for better user experience
+    events: {
+      afterInit: function (editor) {
+        console.log('Edit blog editor initialized successfully');
+      },
+      beforeSetValue: function (editor, data) {
+        return data;
+      }
+    },
+
+    // Additional blog-friendly options
+    removeButtons: [], // Keep all buttons
+    disablePlugins: ['speech-recognize'], // Disable speech if not needed
+    
+    // Autosave settings (optional)
+    saveHeightInStorage: true,
+    
+    // Spellcheck
+    spellcheck: true,
+    
+    // Tab behavior
+    enter: 'P', // Create paragraphs on enter
+    
+    // Link settings
+    link: {
+      openInNewTabCheckbox: true,
+      noFollowCheckbox: true
     }
   };
 
