@@ -5,25 +5,22 @@ import CategoriesModel from '@/lib/models/CategoriesModel';
 import CommentModel from "@/lib/models/CommentModel";
 import { SubscriberModel } from "@/lib/models/SubscriberModel";
 
-const LoadDB = async () => {
-    await connectDB();
-};
-
 export async function GET() {
     try {
-        await LoadDB();
+        // Connect to database with timeout handling
+        await connectDB();
 
         // Get current date and one month ago
         const now = new Date();
         const oneMonthAgo = new Date();
         oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
 
-        // Fetch all data
+        // Fetch all data with timeout protection
         const [blogs, comments, categories, subscribers] = await Promise.all([
-            BlogModel.find({}).sort({ createdAt: -1 }),
-            CommentModel.find({}).sort({ createdAt: -1 }),
-            CategoriesModel.find({}).sort({ createdAt: -1 }),
-            SubscriberModel.find({}).sort({ createdAt: -1 })
+            BlogModel.find({}).sort({ createdAt: -1 }).maxTimeMS(5000),
+            CommentModel.find({}).sort({ createdAt: -1 }).maxTimeMS(5000),
+            CategoriesModel.find({}).sort({ createdAt: -1 }).maxTimeMS(5000),
+            SubscriberModel.find({}).sort({ createdAt: -1 }).maxTimeMS(5000)
         ]);
 
         // Current month data

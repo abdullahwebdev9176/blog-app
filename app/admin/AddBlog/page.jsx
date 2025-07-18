@@ -31,7 +31,29 @@ const AddBlogPage = () => {
     height: 400,
     placeholder: "Write your blog content here...",
     uploader: {
-      insertImageAsBase64URI: true
+      url: '/api/jodit-upload',
+      format: 'json',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      prepareData: function (formdata) {
+        return formdata;
+      },
+      isSuccess: function (resp) {
+        return resp.success === 1;
+      },
+      getMessage: function (resp) {
+        return resp.error || '';
+      },
+      process: function (resp) {
+        return {
+          files: resp.files || [],
+          path: '',
+          baseurl: '',
+          error: resp.error,
+          msg: resp.error || ''
+        };
+      }
     },
     buttons: [
       'bold', 'italic', 'underline', '|',
