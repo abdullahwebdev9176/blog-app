@@ -18,6 +18,7 @@ const AddBlogPage = () => {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
+  const [excerpt, setExcerpt] = useState("");
   const [author, setAuthor] = useState("");
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -50,6 +51,7 @@ const AddBlogPage = () => {
       formData.append("title", title);
       formData.append("category", category);
       formData.append("description", description);
+      formData.append("excerpt", excerpt);
       formData.append("author", author);
       if (image) {
         formData.append("image", image);
@@ -69,6 +71,7 @@ const AddBlogPage = () => {
         setTitle("");
         setCategory("");
         setDescription("");
+        setExcerpt("");
         setAuthor("");
         setImage(null);
         setImagePreview(null);
@@ -155,6 +158,31 @@ const AddBlogPage = () => {
                 onChange={(e) => setTitle(e.target.value)}
                 required
               />
+            </div>
+
+            {/* Excerpt Field */}
+            <div className="admin-form-group">
+              <label className="admin-label">
+                Excerpt 
+                <span className="admin-label-helper">
+                  (Optional - Brief summary for blog listings, max 200 characters)
+                </span>
+              </label>
+              <textarea
+                className="admin-textarea"
+                placeholder="Write a brief excerpt that summarizes your blog post..."
+                value={excerpt}
+                onChange={(e) => {
+                  if (e.target.value.length <= 200) {
+                    setExcerpt(e.target.value);
+                  }
+                }}
+                rows={3}
+                maxLength={200}
+              />
+              <div className="admin-char-counter">
+                {excerpt.length}/200 characters
+              </div>
             </div>
 
             {/* Author and Category Row */}
@@ -250,6 +278,7 @@ const AddBlogPage = () => {
                 setTitle("");
                 setCategory("");
                 setDescription("");
+                setExcerpt("");
                 setAuthor("");
                 setImage(null);
                 setImagePreview(null);

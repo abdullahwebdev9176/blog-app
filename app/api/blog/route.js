@@ -33,6 +33,10 @@ export async function PUT(request) {
       updateData.category = formData.get("category");
       updateData.description = formData.get("description");
       updateData.author = formData.get("author");
+      const excerpt = formData.get("excerpt");
+      if (excerpt !== null) {
+        updateData.excerpt = excerpt.trim();
+      }
       const image = formData.get("image");
       if (image && typeof image === "object" && image.name) {
         const timestamp = Date.now();
@@ -170,6 +174,7 @@ export async function POST(request) {
             const description = formData.get("description");
             const category = formData.get("category");
             const author = formData.get("author");
+            const excerpt = formData.get("excerpt");
             const image = formData.get("image");
 
             if (!title || !description || !category || !author) {
@@ -203,6 +208,7 @@ export async function POST(request) {
             const blogData = {
                 title,
                 description,
+                excerpt: excerpt ? excerpt.trim() : '',
                 image: imageUrl,
                 category,
                 author,
