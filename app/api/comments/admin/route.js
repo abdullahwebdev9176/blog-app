@@ -2,11 +2,19 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/config/db";
 import Comment from "@/lib/models/CommentModel";
 
-// Connect to the database
-await connectDB();
+const LoadDB = async () => {
+    try {
+        await connectDB();
+    } catch (error) {
+        console.error("Database connection failed:", error);
+        throw error;
+    }
+};
 
 export async function GET(req) {
     try {
+        await LoadDB(); // Ensure DB connection before proceeding
+        
         // Fetch all comments with blog information
         const allComments = await Comment.find({})
             .sort({ createdAt: -1 }) // Sort by newest first
@@ -21,14 +29,16 @@ export async function GET(req) {
 }
 
 export async function DELETE(req) {
-    const { searchParams } = new URL(req.url);
-    const commentId = searchParams.get("id");
-
-    if (!commentId) {
-        return NextResponse.json({ error: "Comment ID is required" }, { status: 400 });
-    }
-
     try {
+        await LoadDB(); // Ensure DB connection before proceeding
+        
+        const { searchParams } = new URL(req.url);
+        const commentId = searchParams.get("id");
+
+        if (!commentId) {
+            return NextResponse.json({ error: "Comment ID is required" }, { status: 400 });
+        }
+
         const deletedComment = await Comment.findByIdAndDelete(commentId);
         
         if (!deletedComment) {
@@ -48,14 +58,16 @@ export async function DELETE(req) {
 }
 
 export async function PUT(req) {
-    const { searchParams } = new URL(req.url);
-    const commentId = searchParams.get("id");
-    
-    if (!commentId) {
-        return NextResponse.json({ error: "Comment ID is required" }, { status: 400 });
-    }
-
     try {
+        await LoadDB(); // Ensure DB connection before proceeding
+        
+        const { searchParams } = new URL(req.url);
+        const commentId = searchParams.get("id");
+        
+        if (!commentId) {
+            return NextResponse.json({ error: "Comment ID is required" }, { status: 400 });
+        }
+
         const { status, moderationNote } = await req.json();
         
         const updatedComment = await Comment.findByIdAndUpdate(
