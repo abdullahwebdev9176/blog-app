@@ -18,11 +18,11 @@ const BlogShowcase = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Get latest 6 published blogs
+        // Get latest 3 published blogs
         const publishedBlogs = data.Blogs
           .filter(blog => blog.status === 'published')
           .sort((a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date))
-          .slice(0, 6);
+          .slice(0, 3); 
         
         setBlogs(publishedBlogs);
       }
@@ -40,8 +40,8 @@ const BlogShowcase = () => {
   const categories = ["All", "Technology", "Lifestyle", "Startup", "Health"];
 
   const filteredBlogs = activeCategory === "All" 
-    ? blogs 
-    : blogs.filter(blog => blog.category === activeCategory);
+    ? blogs.slice(0, 3)
+    : blogs.filter(blog => blog.category === activeCategory).slice(0, 3);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -73,7 +73,7 @@ const BlogShowcase = () => {
           </div>
           
           <div className="row g-4">
-            {[1, 2, 3, 4, 5, 6].map((item) => (
+            {[1, 2, 3].map((item) => (
               <div key={item} className="col-lg-4 col-md-6">
                 <div className="blog-card h-100">
                   <div className="placeholder-glow">

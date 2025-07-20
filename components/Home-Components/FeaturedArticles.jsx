@@ -23,8 +23,8 @@ const FeaturedArticles = () => {
       return;
     }
 
-    // Filter blogs with isFeatured: true
-    const featuredBlogs = data.Blogs.filter(blog => blog.isFeatured === true);
+    // Filter blogs with isFeatured: true and limit to 3
+    const featuredBlogs = data.Blogs.filter(blog => blog.isFeatured === true).slice(0, 3);
     setBlogData(featuredBlogs);
     console.log("Featured Articles Response", featuredBlogs);
   } catch (error) {
