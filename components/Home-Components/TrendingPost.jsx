@@ -1,75 +1,138 @@
 "use client";
+
 import { assets } from "@/Assets/assets";
 import Image from "next/image";
+import "./TrendingStyle.css";
+import { useEffect, useState } from "react";
 
-const TrendingPostsSection = () => {
-  const posts = [
-    {
-      id: 1,
-      title: "Boost Your Morning Routine with These Simple Steps",
-      excerpt: "Start your day with energy and clarity using these effective morning habits.",
-      author: "Sarah Lee",
-      image: assets.blog_pic_1,
-      link: "/blog/morning-routine",
-    },
-    {
-      id: 2,
-      title: "Plant-Based Diet Benefits You Didn’t Know",
-      excerpt: "Explore the surprising health benefits of going plant-based in your daily meals.",
-      author: "David Kim",
-      image: assets.blog_pic_2,
-      link: "/blog/plant-based-benefits",
-    },
-    {
-      id: 3,
-      title: "Top 5 Yoga Poses for a Stronger Core",
-      excerpt: "Strengthen your core and improve your balance with these simple yoga poses.",
-      author: "Emily Brown",
-      image: assets.blog_pic_3,
-      link: "/blog/yoga-core",
-    },
-    {
-      id: 4,
-      title: "Healthy Smoothie Recipes to Try This Summer",
-      excerpt: "Cool off and stay healthy with these delicious and easy smoothie recipes.",
-      author: "John Doe",
-      image: assets.blog_pic_4,
-      link: "/blog/smoothie-recipes",
-    },
-  ];
+const TrendingPost = () => {
+  const [trendingBlogs, setTrendingBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchTrendingBlogs = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/blog');
+      
+      if (!response.ok) {
+        console.error('Failed to fetch blogs');
+        setLoading(false);
+        return;
+      }
+      
+      const data = await response.json();
+      
+      // Sort blogs by views in descending order and take top 4
+      const sortedByViews = data.Blogs
+        .filter(blog => blog.status === 'published') // Only show published blogs
+        .sort((a, b) => (b.views || 0) - (a.views || 0))
+        .slice(0, 4); // Get top 4 trending posts
+      
+      setTrendingBlogs(sortedByViews);
+      console.log("Trending Posts Response", sortedByViews);
+    } catch (error) {
+      console.error('Error fetching trending blogs:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTrendingBlogs();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="trending-posts py-5">
+        <div className="container">
+          <h2 className="text-center mb-5 fw-bold text-primary">Trending Posts</h2>
+          <div className="row">
+            {[1, 2, 3, 4].map((item) => (
+              <div key={item} className="col-12 col-sm-6 col-lg-3 mb-4">
+                <div className="card post-card shadow-sm h-100">
+                  <div className="placeholder-glow">
+                    <div className="placeholder" style={{ height: "200px", width: "100%" }}></div>
+                  </div>
+                  <div className="card-body">
+                    <h5 className="placeholder-glow">
+                      <span className="placeholder col-8"></span>
+                    </h5>
+                    <p className="placeholder-glow">
+                      <span className="placeholder col-12"></span>
+                      <span className="placeholder col-8"></span>
+                    </p>
+                    <div className="placeholder-glow">
+                      <span className="placeholder col-4"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="trending-posts py-5">
       <div className="container">
         <h2 className="text-center mb-5 fw-bold text-primary">Trending Posts</h2>
         <div className="row">
-          {posts.map((post) => (
-            <div key={post.id} className="col-12 col-sm-6 col-lg-3 mb-4">
-              <div className="card post-card shadow-sm h-100">
-                <div className="image-wrapper">
-                  <Image
-                    src={post.image}
-                    alt={post.title}
-                    width={500}
-                    height={300}
-                    style={{ objectFit: "cover", width: "100%", height: "200px" }}
-                  />
-                </div>
-                <div className="card-body d-flex flex-column">
-                  <h5 className="card-title">{post.title}</h5>
-                  <p className="card-text flex-grow-1">{post.excerpt}</p>
-                  <p className="text-muted small mb-2">By {post.author}</p>
-                  <a href={post.link} className="btn btn-outline-primary mt-auto">
-                    Read More
-                  </a>
+          {trendingBlogs.length > 0 ? (
+            trendingBlogs.map((post, index) => (
+              <div key={post._id} className="col-12 col-sm-6 col-lg-3 mb-4">
+                <div className="card post-card shadow-sm h-100">
+                  {/* Trending Badge */}
+                  <div className="position-relative">
+                    <div className="image-wrapper">
+                      <Image
+                        src={post.image || assets.blog_pic_1}
+                        alt={post.title}
+                        width={500}
+                        height={300}
+                        style={{ objectFit: "cover", width: "100%", height: "200px" }}
+                      />
+                    </div>
+                    {index === 0 && (
+                      <span className="badge bg-danger position-absolute top-0 start-0 m-2">
+                        🔥 #1 Trending
+                      </span>
+                    )}
+                    {index < 3 && index > 0 && (
+                      <span className="badge bg-warning position-absolute top-0 start-0 m-2">
+                        📈 Trending
+                      </span>
+                    )}
+                  </div>
+                  <div className="card-body d-flex flex-column">
+                    <h5 className="card-title">{post.title}</h5>
+                    <p className="card-text flex-grow-1">
+                      {post.excerpt || post.description?.replace(/<[^>]*>/g, '').substring(0, 100) + '...'}
+                    </p>
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <small className="text-muted">By {post.author}</small>
+                      <small className="text-primary fw-bold">
+                        👁️ {post.views || 0} views
+                      </small>
+                    </div>
+                    <a href={`/blogs/${post.slug}`} className="btn btn-outline-primary mt-auto">
+                      Read More
+                    </a>
+                  </div>
                 </div>
               </div>
+            ))
+          ) : (
+            <div className="col-12 text-center">
+              <h4 className="text-muted">No trending posts available</h4>
+              <p className="text-muted">Check back later for trending content!</p>
             </div>
-          ))}
+          )}
         </div>
       </div>
     </section>
   );
 };
 
-export default TrendingPostsSection;
+export default TrendingPost;
