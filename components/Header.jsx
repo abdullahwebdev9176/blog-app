@@ -67,7 +67,7 @@ const Header = () => {
       <header className="mobile-header">
         <div className="mobile-header-parent">
           <div className="mobile-header-img">
-            <Link href="/"> <Image src={assets.logo} alt="" /></Link>
+            <Link href="/"> <Image src={assets.officalLogo} alt="" /></Link>
           </div>
           <div className="custom-toggle-icon" onClick={toggleMobileHeader}>
             {mobileHeader ? (

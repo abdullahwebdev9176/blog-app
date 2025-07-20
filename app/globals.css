@@ -276,13 +276,12 @@ body {
   top: 0;
   left: 0;
   width: 100%;
-  background: white;
   z-index: 500;
   height: 80px;
 }
 
 .mobile-header-img {
-  width: 150px;
+  width: 90px;
   height: auto;
 }
 
@@ -296,8 +295,8 @@ body {
 }
 
 .mobile-header-list {
-  position: fixed;
-  top: 90px;
+  position: absolute;
+  top: 80px;
   left: 0;
   z-index: 200;
   width: 100%;
@@ -543,7 +542,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
+    padding: 0px 20px;
     background-color: #f8f9fa;
   }
 
