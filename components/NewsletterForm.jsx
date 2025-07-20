@@ -174,6 +174,8 @@ const NewsletterForm = ({ showHeading = true, variant = 'default' }) => {
         .newsletter-subscription {
           max-width: 500px;
           margin: 0 auto;
+          padding-left: 15px;
+          padding-right: 15px;
         }
 
         .newsletter-compact {

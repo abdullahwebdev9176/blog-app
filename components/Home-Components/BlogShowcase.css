@@ -366,8 +366,15 @@
   }
   
   .filter-container {
-    flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
+    background: transparent;
+    box-shadow: none;
+    border: none;
+    overflow-x: auto;
+    border-radius: 0;
+  }
+  .filter-container::-webkit-scrollbar{
+    display: none;
   }
   
   .filter-btn {
