@@ -24,6 +24,8 @@ const AddBlogPage = () => {
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [imagePreview, setImagePreview] = useState(null);
+  const [status, setStatus] = useState("draft");
+  const [scheduledFor, setScheduledFor] = useState("");
   const fileInputRef = useRef(null);
 
   const config = {
@@ -214,12 +216,29 @@ const AddBlogPage = () => {
     setLoading(true);
 
     try {
+      // Validate scheduled date if status is scheduled
+      if (status === "scheduled" && !scheduledFor) {
+        toast.error("Please select a scheduled date and time");
+        setLoading(false);
+        return;
+      }
+
+      if (status === "scheduled" && new Date(scheduledFor) <= new Date()) {
+        toast.error("Scheduled date must be in the future");
+        setLoading(false);
+        return;
+      }
+
       const formData = new FormData();
       formData.append("title", title);
       formData.append("category", category);
       formData.append("description", description);
       formData.append("excerpt", excerpt);
       formData.append("author", author);
+      formData.append("status", status);
+      if (status === "scheduled" && scheduledFor) {
+        formData.append("scheduledFor", scheduledFor);
+      }
       if (image) {
         formData.append("image", image);
       }
@@ -234,7 +253,10 @@ const AddBlogPage = () => {
       console.log("Response from server:", response.data);
 
       if (response.data.success) {
-        toast.success("Blog post created successfully!");
+        const statusMessage = status === "published" ? "published" : 
+                            status === "scheduled" ? "scheduled for publishing" : 
+                            status === "draft" ? "saved as draft" : "saved as private";
+        toast.success(`Blog post ${statusMessage} successfully!`);
         setTitle("");
         setCategory("");
         setDescription("");
@@ -242,6 +264,8 @@ const AddBlogPage = () => {
         setAuthor("");
         setImage(null);
         setImagePreview(null);
+        setStatus("draft");
+        setScheduledFor("");
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
         }
@@ -384,6 +408,43 @@ const AddBlogPage = () => {
               </div>
             </div>
 
+            {/* Status and Scheduling Row */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="admin-form-group">
+                <label className="admin-label">Post Status *</label>
+                <select
+                  className="admin-select"
+                  value={status}
+                  onChange={(e) => {
+                    setStatus(e.target.value);
+                    if (e.target.value !== "scheduled") {
+                      setScheduledFor("");
+                    }
+                  }}
+                  required
+                >
+                  <option value="draft">Draft</option>
+                  <option value="published">Published</option>
+                  <option value="scheduled">Scheduled</option>
+                  <option value="private">Private</option>
+                </select>
+              </div>
+
+              {status === "scheduled" && (
+                <div className="admin-form-group">
+                  <label className="admin-label">Scheduled Date & Time *</label>
+                  <input
+                    type="datetime-local"
+                    className="admin-input"
+                    value={scheduledFor}
+                    onChange={(e) => setScheduledFor(e.target.value)}
+                    min={new Date().toISOString().slice(0, 16)}
+                    required={status === "scheduled"}
+                  />
+                </div>
+              )}
+            </div>
+
             {/* Content Editor */}
             <div className="admin-form-group">
               <label className="admin-label">Content *</label>
@@ -449,6 +510,8 @@ const AddBlogPage = () => {
                 setAuthor("");
                 setImage(null);
                 setImagePreview(null);
+                setStatus("draft");
+                setScheduledFor("");
                 if (fileInputRef.current) {
                   fileInputRef.current.value = '';
                 }
@@ -465,12 +528,16 @@ const AddBlogPage = () => {
               {loading ? (
                 <>
                   <FontAwesomeIcon icon={faSpinner} spin />
-                  Publishing...
+                  {status === "published" ? "Publishing..." : 
+                   status === "scheduled" ? "Scheduling..." : 
+                   status === "draft" ? "Saving Draft..." : "Saving as Private..."}
                 </>
               ) : (
                 <>
                   <FontAwesomeIcon icon={faUpload} />
-                  Publish Blog Post
+                  {status === "published" ? "Publish Post" : 
+                   status === "scheduled" ? "Schedule Post" : 
+                   status === "draft" ? "Save as Draft" : "Save as Private"}
                 </>
               )}
             </button>

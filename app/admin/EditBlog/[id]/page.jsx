@@ -23,6 +23,8 @@ const EditBlogPage = ({ params }) => {
   const [newImage, setNewImage] = useState(null);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState("draft");
+  const [scheduledFor, setScheduledFor] = useState("");
 
   const config = {
     readonly: false,
@@ -217,6 +219,16 @@ const EditBlogPage = ({ params }) => {
         setDescription(blog.description || "");
         setAuthor(blog.author || "");
         setImage(blog.image || "");
+        setStatus(blog.status || "draft");
+        
+        // Format scheduledFor for datetime-local input
+        if (blog.scheduledFor) {
+          const date = new Date(blog.scheduledFor);
+          const formattedDate = date.toISOString().slice(0, 16);
+          setScheduledFor(formattedDate);
+        } else {
+          setScheduledFor("");
+        }
 
         if (blog.category && blog.category._id) {
           setCategory(blog.category._id);
@@ -249,11 +261,28 @@ const EditBlogPage = ({ params }) => {
     e.preventDefault();
     setLoading(true);
     try {
+      // Validate scheduled date if status is scheduled
+      if (status === "scheduled" && !scheduledFor) {
+        toast.error("Please select a scheduled date and time");
+        setLoading(false);
+        return;
+      }
+
+      if (status === "scheduled" && new Date(scheduledFor) <= new Date()) {
+        toast.error("Scheduled date must be in the future");
+        setLoading(false);
+        return;
+      }
+
       const formData = new FormData();
       formData.append("title", title);
       formData.append("category", category);
       formData.append("description", description);
       formData.append("author", author);
+      formData.append("status", status);
+      if (status === "scheduled" && scheduledFor) {
+        formData.append("scheduledFor", scheduledFor);
+      }
       if (newImage) {
         formData.append("image", newImage);
       }
@@ -262,7 +291,10 @@ const EditBlogPage = ({ params }) => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      toast.success("Blog updated successfully!");
+      const statusMessage = status === "published" ? "published" : 
+                          status === "scheduled" ? "scheduled for publishing" : 
+                          status === "draft" ? "saved as draft" : "saved as private";
+      toast.success(`Blog ${statusMessage} successfully!`);
       router.push("/admin/BlogList");
     } catch (err) {
       toast.error(err.response?.data?.error || "Failed to update blog");
@@ -320,6 +352,38 @@ const EditBlogPage = ({ params }) => {
           />
         </div>
         <div className="mb-3">
+          <label>Post Status</label>
+          <select
+            className="form-control"
+            value={status}
+            onChange={(e) => {
+              setStatus(e.target.value);
+              if (e.target.value !== "scheduled") {
+                setScheduledFor("");
+              }
+            }}
+            required
+          >
+            <option value="draft">Draft</option>
+            <option value="published">Published</option>
+            <option value="scheduled">Scheduled</option>
+            <option value="private">Private</option>
+          </select>
+        </div>
+        {status === "scheduled" && (
+          <div className="mb-3">
+            <label>Scheduled Date & Time</label>
+            <input
+              type="datetime-local"
+              className="form-control"
+              value={scheduledFor}
+              onChange={(e) => setScheduledFor(e.target.value)}
+              min={new Date().toISOString().slice(0, 16)}
+              required={status === "scheduled"}
+            />
+          </div>
+        )}
+        <div className="mb-3">
           <label>Current Image</label><br />
           {newImage ? (
             <img
@@ -340,7 +404,15 @@ const EditBlogPage = ({ params }) => {
           />
         </div>
         <button type="submit" className="btn btn-primary" disabled={loading}>
-          {loading ? "Updating..." : "Update Blog"}
+          {loading ? (
+            status === "published" ? "Publishing..." : 
+            status === "scheduled" ? "Scheduling..." : 
+            status === "draft" ? "Saving Draft..." : "Saving as Private..."
+          ) : (
+            status === "published" ? "Publish Blog" : 
+            status === "scheduled" ? "Schedule Blog" : 
+            status === "draft" ? "Save as Draft" : "Save as Private"
+          )}
         </button>
       </form>
     </div>

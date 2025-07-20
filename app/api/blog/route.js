@@ -33,6 +33,35 @@ export async function PUT(request) {
       if (excerpt !== null) {
         updateData.excerpt = excerpt.trim();
       }
+      
+      // Handle status updates
+      const status = formData.get("status");
+      const scheduledFor = formData.get("scheduledFor");
+      
+      if (status) {
+        updateData.status = status;
+        
+        // Handle publishedAt field
+        if (status === "published") {
+          // Only set publishedAt if not already set (preserves original publish date)
+          const existingBlog = await BlogModel.findById(blogId);
+          if (!existingBlog.publishedAt) {
+            updateData.publishedAt = new Date();
+          }
+          updateData.scheduledFor = null; // Clear scheduled date when publishing
+        } else if (status === "scheduled") {
+          if (!scheduledFor || new Date(scheduledFor) <= new Date()) {
+            return NextResponse.json({ error: "Invalid scheduled date for scheduled posts" }, { status: 400 });
+          }
+          updateData.scheduledFor = new Date(scheduledFor);
+          updateData.publishedAt = null; // Clear published date when scheduling
+        } else {
+          // For draft and private, clear both dates
+          updateData.publishedAt = null;
+          updateData.scheduledFor = null;
+        }
+      }
+      
       const image = formData.get("image");
       if (image && typeof image === "object" && image.name) {
         try {
@@ -106,7 +135,10 @@ export async function GET(request) {
     try {
         await LoadDB(); // Ensure DB connection before proceeding
         
-        const blogId = request.nextUrl.searchParams.get("id");
+        const { searchParams } = new URL(request.url);
+        const blogId = searchParams.get("id");
+        const isAdmin = searchParams.get("admin") === "true";
+        
         if (blogId) {
             const blog = await BlogModel.findById(blogId);
             if (!blog) {   
@@ -115,7 +147,28 @@ export async function GET(request) {
             return NextResponse.json({ blog });
         }
 
-        const Blogs = await BlogModel.find({}).sort({ createdAt: -1 });
+        let query = {};
+        
+        // For non-admin requests (frontend), only show published posts
+        if (!isAdmin) {
+            query = {
+                $or: [
+                    { 
+                        status: "published",
+                        $or: [
+                            { publishedAt: { $lte: new Date() } },
+                            { publishedAt: null }
+                        ]
+                    },
+                    {
+                        status: "scheduled",
+                        scheduledFor: { $lte: new Date() }
+                    }
+                ]
+            };
+        }
+
+        const Blogs = await BlogModel.find(query).sort({ createdAt: -1 });
         return NextResponse.json({Blogs});
     } catch (error) {
         console.error("Error in GET /api/blog:", error);
@@ -205,6 +258,8 @@ export async function POST(request) {
             const author = formData.get("author");
             const excerpt = formData.get("excerpt");
             const image = formData.get("image");
+            const status = formData.get("status") || "draft";
+            const scheduledFor = formData.get("scheduledFor");
 
             if (!title || !description || !category || !author) {
                 console.error("Missing required fields");
@@ -214,6 +269,11 @@ export async function POST(request) {
             if (!image) {
                 console.error("No image uploaded");
                 return NextResponse.json({ error: "No image uploaded" }, { status: 400 });
+            }
+
+            // Validate scheduled date if status is scheduled
+            if (status === "scheduled" && (!scheduledFor || new Date(scheduledFor) <= new Date())) {
+                return NextResponse.json({ error: "Invalid scheduled date for scheduled posts" }, { status: 400 });
             }
 
             // Upload image to Cloudinary
@@ -261,6 +321,9 @@ export async function POST(request) {
                 imagePublicId: imagePublicId, // Store Cloudinary public ID for future deletion
                 category,
                 author,
+                status,
+                scheduledFor: status === "scheduled" ? new Date(scheduledFor) : null,
+                publishedAt: status === "published" ? new Date() : null,
             };
 
             console.log("Blog data to be saved:", blogData);

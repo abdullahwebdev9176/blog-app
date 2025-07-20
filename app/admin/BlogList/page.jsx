@@ -23,12 +23,13 @@ const BlogListPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
   const [categories, setCategories] = useState([]);
   const router = useRouter();
 
   const fetchBlogs = async () => {
     try {
-      const response = await axios.get('/api/blog');
+      const response = await axios.get('/api/blog?admin=true');
       setBlog(response.data.Blogs || []);
     } catch (error) {
       toast.error('Failed to fetch blogs');
@@ -72,11 +73,32 @@ const BlogListPage = () => {
     });
   };
 
+  const getStatusDisplay = (blog) => {
+    if (blog.status === 'scheduled' && blog.scheduledFor) {
+      const scheduledDate = new Date(blog.scheduledFor);
+      const now = new Date();
+      if (scheduledDate <= now) {
+        return { text: 'Ready to Publish', color: 'warning' };
+      }
+      return { text: `Scheduled for ${formatDate(blog.scheduledFor)}`, color: 'info' };
+    }
+    
+    const statusMap = {
+      'published': { text: 'Published', color: 'success' },
+      'draft': { text: 'Draft', color: 'secondary' },
+      'private': { text: 'Private', color: 'dark' },
+      'scheduled': { text: 'Scheduled', color: 'info' }
+    };
+    
+    return statusMap[blog.status] || { text: blog.status, color: 'secondary' };
+  };
+
   const filteredBlogs = blogs.filter(blog => {
     const matchesSearch = blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          blog.author.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = filterCategory === '' || blog.category === filterCategory;
-    return matchesSearch && matchesCategory;
+    const matchesStatus = filterStatus === '' || blog.status === filterStatus;
+    return matchesSearch && matchesCategory && matchesStatus;
   });
 
   if (loading) {
@@ -141,6 +163,18 @@ const BlogListPage = () => {
                   </option>
                 ))}
               </select>
+              <select
+                className="admin-select"
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                style={{ minWidth: '130px' }}
+              >
+                <option value="">All Status</option>
+                <option value="published">Published</option>
+                <option value="draft">Draft</option>
+                <option value="scheduled">Scheduled</option>
+                <option value="private">Private</option>
+              </select>
             </div>
           </div>
 
@@ -179,6 +213,7 @@ const BlogListPage = () => {
                       <FontAwesomeIcon icon={faTag} style={{ marginRight: '0.5rem' }} />
                       Category
                     </th>
+                    <th>Status</th>
                     <th>
                       <FontAwesomeIcon icon={faEye} style={{ marginRight: '0.5rem' }} />
                       Views
@@ -233,6 +268,11 @@ const BlogListPage = () => {
                       <td>
                         <span className="admin-badge admin-badge-secondary">
                           {blog.category}
+                        </span>
+                      </td>
+                      <td>
+                        <span className={`admin-badge admin-badge-${getStatusDisplay(blog).color}`}>
+                          {getStatusDisplay(blog).text}
                         </span>
                       </td>
                       <td>
