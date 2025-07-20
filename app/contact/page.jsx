@@ -3,6 +3,10 @@ import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { generateMetadata as generateSEOMetadata, getCanonicalUrl } from "@/lib/utils/seo";
+
+// Note: For client components, we need to handle metadata differently
+// This will be handled by adding metadata in a parent server component
 
 const ContactPage = () => {
   const [name, setName] = useState("");
@@ -35,24 +39,63 @@ const ContactPage = () => {
   };
 
   return (
-    <div className="contact-form py-5">
-      <h1 className="mb-4 text-center">Contact Us</h1>
-      <form className="space-y-3" onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label className="form-label">Name</label>
-          <input type="text" className="form-control" placeholder="Your Name" value={name} onChange={e => setName(e.target.value)} required />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Email</label>
-          <input type="email" className="form-control" placeholder="Your Email" value={email} onChange={e => setEmail(e.target.value)} required />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Message</label>
-          <textarea className="form-control" rows="4" placeholder="Your Message" value={message} onChange={e => setMessage(e.target.value)} required></textarea>
-        </div>
-        <button type="submit" className="btn btn-primary" disabled={loading}>{loading ? "Sending..." : "Send Message"}</button>
-      </form>
-    </div>
+    <article className="contact-form py-5">
+      <header className="mb-4 text-center">
+        <h1>Contact Us</h1>
+        <p>Get in touch with our team. We'd love to hear from you!</p>
+      </header>
+      <section className="container">
+        <form className="space-y-3" onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label htmlFor="contact-name" className="form-label">Name</label>
+            <input 
+              id="contact-name"
+              type="text" 
+              className="form-control" 
+              placeholder="Your Name" 
+              value={name} 
+              onChange={e => setName(e.target.value)} 
+              required 
+              aria-describedby="name-help"
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="contact-email" className="form-label">Email</label>
+            <input 
+              id="contact-email"
+              type="email" 
+              className="form-control" 
+              placeholder="Your Email" 
+              value={email} 
+              onChange={e => setEmail(e.target.value)} 
+              required 
+              aria-describedby="email-help"
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="contact-message" className="form-label">Message</label>
+            <textarea 
+              id="contact-message"
+              className="form-control" 
+              rows="4" 
+              placeholder="Your Message" 
+              value={message} 
+              onChange={e => setMessage(e.target.value)} 
+              required
+              aria-describedby="message-help"
+            ></textarea>
+          </div>
+          <button 
+            type="submit" 
+            className="btn btn-primary" 
+            disabled={loading}
+            aria-describedby="submit-help"
+          >
+            {loading ? "Sending..." : "Send Message"}
+          </button>
+        </form>
+      </section>
+    </article>
   );
 };
 

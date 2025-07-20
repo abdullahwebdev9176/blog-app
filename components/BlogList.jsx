@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import BlogItem from './BlogItem';
 import SkeletonLoader from './Placeholders/BlogPlaceholder';

@@ -12,12 +12,24 @@ export default function HomePage() {
   return (
     <>
       <HeroSection />
-      <FeaturedArticles />
-      <CategoriesSection />
-      <TrendingPostsSection />
-      <AboutAuthorSection />
-      <TestimonialsSection />
-      <NewsletterForm />
+      <section>
+        <FeaturedArticles />
+      </section>
+      <section>
+        <CategoriesSection />
+      </section>
+      <section>
+        <TrendingPostsSection />
+      </section>
+      <section>
+        <AboutAuthorSection />
+      </section>
+      <section>
+        <TestimonialsSection />
+      </section>
+      <section>
+        <NewsletterForm />
+      </section>
     </>
   );
 }
