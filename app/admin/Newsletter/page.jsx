@@ -101,117 +101,156 @@ const NewsletterManagement = () => {
 
     if (loading) {
         return (
-            <div className="admin-container">
-                <div className="loading-spinner">
-                    <FontAwesomeIcon icon={faRefresh} spin size="2x" />
-                    <p>Loading newsletter data...</p>
+            <div className="admin-page">
+                <div className="admin-loading">
+                    <div className="admin-spinner"></div>
+                    Loading newsletter data...
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="admin-container">
+        <div className="admin-page">
             {/* Alerts */}
-            <div className="alerts-container">
-                {alerts.map(alert => (
-                    <div key={alert.id} className={`alert alert-${alert.type}`}>
-                        <FontAwesomeIcon 
-                            icon={alert.type === 'success' ? faCheckCircle : faExclamationTriangle} 
-                        />
-                        {alert.message}
-                    </div>
-                ))}
-            </div>
+            {alerts.length > 0 && (
+                <div style={{ marginBottom: '1.5rem' }}>
+                    {alerts.map(alert => (
+                        <div key={alert.id} className={`admin-alert admin-alert-${alert.type === 'success' ? 'success' : 'danger'}`}>
+                            <FontAwesomeIcon 
+                                icon={alert.type === 'success' ? faCheckCircle : faExclamationTriangle} 
+                                className="admin-alert-icon"
+                            />
+                            {alert.message}
+                        </div>
+                    ))}
+                </div>
+            )}
 
             {/* Header */}
-            <div className="admin-header">
-                <div className="header-content">
-                    <h1>
-                        <FontAwesomeIcon icon={faEnvelope} className="header-icon" />
-                        Newsletter Management
-                    </h1>
-                    <button 
-                        className="btn btn-primary"
-                        onClick={refreshData}
-                        disabled={loading}
-                    >
-                        <FontAwesomeIcon icon={faRefresh} spin={loading} />
-                        Refresh Data
-                    </button>
+            <div className="admin-card" style={{ marginBottom: '2rem' }}>
+                <div className="admin-card-body">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                            <h1 style={{ margin: 0, color: 'var(--admin-text-primary)', fontSize: '1.75rem' }}>
+                                <FontAwesomeIcon icon={faEnvelope} style={{ marginRight: '0.75rem', color: 'var(--admin-primary)' }} />
+                                Newsletter Management
+                            </h1>
+                            <p style={{ 
+                                margin: '0.5rem 0 0', 
+                                color: 'var(--admin-text-secondary)',
+                                fontSize: '0.875rem'
+                            }}>
+                                Manage newsletter campaigns and subscriber notifications
+                            </p>
+                        </div>
+                        <button 
+                            className="admin-btn admin-btn-primary"
+                            onClick={refreshData}
+                            disabled={loading}
+                        >
+                            <FontAwesomeIcon icon={faRefresh} spin={loading} />
+                            Refresh Data
+                        </button>
+                    </div>
                 </div>
             </div>
 
             {/* Statistics Cards */}
-            <div className="stats-grid">
-                <div className="stat-card">
-                    <div className="stat-content">
-                        <div className="stat-icon">
+            <div className="admin-stats-grid" style={{ marginBottom: '2rem' }}>
+                <div className="admin-stat-card">
+                    <div className="admin-stat-header">
+                        <h3 className="admin-stat-title">Active Subscribers</h3>
+                        <div className="admin-stat-icon" style={{ backgroundColor: 'var(--admin-info)' }}>
                             <FontAwesomeIcon icon={faUsers} />
                         </div>
-                        <div className="stat-details">
-                            <h3>{newsletterStats.totalSubscribers}</h3>
-                            <p>Active Subscribers</p>
-                        </div>
+                    </div>
+                    <div className="admin-stat-value">{newsletterStats.totalSubscribers}</div>
+                    <div className="admin-stat-change positive">
+                        <FontAwesomeIcon icon={faUsers} style={{ marginRight: '0.25rem' }} />
+                        Total active subscribers
                     </div>
                 </div>
 
-                <div className="stat-card">
-                    <div className="stat-content">
-                        <div className="stat-icon">
+                <div className="admin-stat-card">
+                    <div className="admin-stat-header">
+                        <h3 className="admin-stat-title">Newsletters Sent</h3>
+                        <div className="admin-stat-icon" style={{ backgroundColor: 'var(--admin-success)' }}>
                             <FontAwesomeIcon icon={faPaperPlane} />
                         </div>
-                        <div className="stat-details">
-                            <h3>{newsletterStats.newslettersSent}</h3>
-                            <p>Newsletters Sent</p>
-                        </div>
+                    </div>
+                    <div className="admin-stat-value">{newsletterStats.newslettersSent}</div>
+                    <div className="admin-stat-change positive">
+                        <FontAwesomeIcon icon={faPaperPlane} style={{ marginRight: '0.25rem' }} />
+                        Successfully delivered
                     </div>
                 </div>
 
-                <div className="stat-card">
-                    <div className="stat-content">
-                        <div className="stat-icon">
+                <div className="admin-stat-card">
+                    <div className="admin-stat-header">
+                        <h3 className="admin-stat-title">Pending Notifications</h3>
+                        <div className="admin-stat-icon" style={{ backgroundColor: 'var(--admin-warning)' }}>
                             <FontAwesomeIcon icon={faClock} />
                         </div>
-                        <div className="stat-details">
-                            <h3>{newsletterStats.pendingNotifications}</h3>
-                            <p>Pending Notifications</p>
-                        </div>
+                    </div>
+                    <div className="admin-stat-value">{newsletterStats.pendingNotifications}</div>
+                    <div className="admin-stat-change" style={{ color: 'var(--admin-warning)' }}>
+                        <FontAwesomeIcon icon={faClock} style={{ marginRight: '0.25rem' }} />
+                        Awaiting newsletter
                     </div>
                 </div>
 
-                <div className="stat-card">
-                    <div className="stat-content">
-                        <div className="stat-icon">
+                <div className="admin-stat-card">
+                    <div className="admin-stat-header">
+                        <h3 className="admin-stat-title">Total Blog Posts</h3>
+                        <div className="admin-stat-icon" style={{ backgroundColor: 'var(--admin-primary)' }}>
                             <FontAwesomeIcon icon={faEye} />
                         </div>
-                        <div className="stat-details">
-                            <h3>{newsletterStats.totalBlogPosts}</h3>
-                            <p>Total Blog Posts</p>
-                        </div>
+                    </div>
+                    <div className="admin-stat-value">{newsletterStats.totalBlogPosts}</div>
+                    <div className="admin-stat-change positive">
+                        <FontAwesomeIcon icon={faEye} style={{ marginRight: '0.25rem' }} />
+                        Published content
                     </div>
                 </div>
             </div>
 
             {/* Pending Notifications */}
-            <div className="admin-section">
-                <div className="section-header">
-                    <h2>
-                        <FontAwesomeIcon icon={faClock} />
-                        Pending Notifications
-                    </h2>
-                    <span className="badge">{pendingPosts.length}</span>
+            <div className="admin-card" style={{ marginBottom: '2rem' }}>
+                <div className="admin-card-header">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                            <h2 className="admin-card-title">
+                                <FontAwesomeIcon icon={faClock} style={{ marginRight: '0.5rem', color: 'var(--admin-warning)' }} />
+                                Pending Notifications
+                            </h2>
+                            <p style={{ 
+                                margin: '0.5rem 0 0', 
+                                color: 'var(--admin-text-secondary)',
+                                fontSize: '0.875rem'
+                            }}>
+                                Blog posts awaiting newsletter distribution
+                            </p>
+                        </div>
+                        <div className="admin-badge admin-badge-warning">
+                            {pendingPosts.length} Pending
+                        </div>
+                    </div>
                 </div>
 
-                {pendingPosts.length === 0 ? (
-                    <div className="empty-state">
-                        <FontAwesomeIcon icon={faCheckCircle} size="3x" />
-                        <h3>All caught up!</h3>
-                        <p>No pending newsletter notifications. All blog posts have been sent to subscribers.</p>
-                    </div>
-                ) : (
-                    <div className="card">
-                        <div className="table-responsive">
+                <div className="admin-card-body">
+                    {pendingPosts.length === 0 ? (
+                        <div className="admin-empty-state">
+                            <div className="admin-empty-icon">
+                                <FontAwesomeIcon icon={faCheckCircle} />
+                            </div>
+                            <h3 className="admin-empty-title">All caught up!</h3>
+                            <p className="admin-empty-description">
+                                No pending newsletter notifications. All blog posts have been sent to subscribers.
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="admin-table-container">
                             <table className="admin-table">
                                 <thead>
                                     <tr>
@@ -226,17 +265,17 @@ const NewsletterManagement = () => {
                                     {pendingPosts.map((post) => (
                                         <tr key={post._id}>
                                             <td>
-                                                <div className="blog-title">
+                                                <div style={{ fontWeight: '500', color: 'var(--admin-text-primary)' }}>
                                                     {post.title}
                                                 </div>
                                             </td>
                                             <td>
-                                                <span className="author-badge">
+                                                <span className="admin-badge admin-badge-info">
                                                     {post.author}
                                                 </span>
                                             </td>
                                             <td>
-                                                <span className="category-badge">
+                                                <span className="admin-badge admin-badge-success">
                                                     {post.category}
                                                 </span>
                                             </td>
@@ -245,7 +284,7 @@ const NewsletterManagement = () => {
                                             </td>
                                             <td>
                                                 <button
-                                                    className="btn btn-primary btn-sm"
+                                                    className="admin-btn admin-btn-primary admin-btn-sm"
                                                     onClick={() => sendNewsletter(post._id)}
                                                     disabled={sendingNewsletter[post._id]}
                                                 >
@@ -261,28 +300,41 @@ const NewsletterManagement = () => {
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
 
             {/* Recent Newsletters */}
-            <div className="admin-section">
-                <div className="section-header">
-                    <h2>
-                        <FontAwesomeIcon icon={faPaperPlane} />
-                        Recent Newsletters
-                    </h2>
+            <div className="admin-card">
+                <div className="admin-card-header">
+                    <div>
+                        <h2 className="admin-card-title">
+                            <FontAwesomeIcon icon={faPaperPlane} style={{ marginRight: '0.5rem', color: 'var(--admin-success)' }} />
+                            Recent Newsletters
+                        </h2>
+                        <p style={{ 
+                            margin: '0.5rem 0 0', 
+                            color: 'var(--admin-text-secondary)',
+                            fontSize: '0.875rem'
+                        }}>
+                            Recently sent newsletter campaigns
+                        </p>
+                    </div>
                 </div>
 
-                {newsletterStats.recentNewsletters.length === 0 ? (
-                    <div className="empty-state">
-                        <FontAwesomeIcon icon={faEnvelope} size="3x" />
-                        <h3>No newsletters sent yet</h3>
-                        <p>Start creating blog posts to send newsletters to your subscribers.</p>
-                    </div>
-                ) : (
-                    <div className="card">
-                        <div className="table-responsive">
+                <div className="admin-card-body">
+                    {newsletterStats.recentNewsletters.length === 0 ? (
+                        <div className="admin-empty-state">
+                            <div className="admin-empty-icon">
+                                <FontAwesomeIcon icon={faEnvelope} />
+                            </div>
+                            <h3 className="admin-empty-title">No newsletters sent yet</h3>
+                            <p className="admin-empty-description">
+                                Start creating blog posts to send newsletters to your subscribers.
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="admin-table-container">
                             <table className="admin-table">
                                 <thead>
                                     <tr>
@@ -296,12 +348,12 @@ const NewsletterManagement = () => {
                                     {newsletterStats.recentNewsletters.map((newsletter) => (
                                         <tr key={newsletter._id}>
                                             <td>
-                                                <div className="blog-title">
+                                                <div style={{ fontWeight: '500', color: 'var(--admin-text-primary)' }}>
                                                     {newsletter.title}
                                                 </div>
                                             </td>
                                             <td>
-                                                <span className="author-badge">
+                                                <span className="admin-badge admin-badge-info">
                                                     {newsletter.author}
                                                 </span>
                                             </td>
@@ -309,8 +361,8 @@ const NewsletterManagement = () => {
                                                 {new Date(newsletter.newsletterSentAt).toLocaleDateString()}
                                             </td>
                                             <td>
-                                                <span className="status-badge status-success">
-                                                    <FontAwesomeIcon icon={faCheckCircle} />
+                                                <span className="admin-badge admin-badge-success">
+                                                    <FontAwesomeIcon icon={faCheckCircle} style={{ marginRight: '0.25rem' }} />
                                                     Sent Successfully
                                                 </span>
                                             </td>
@@ -319,8 +371,8 @@ const NewsletterManagement = () => {
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
         </div>
     );
