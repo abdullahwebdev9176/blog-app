@@ -1,6 +1,7 @@
 "use client";
 
 import AboutAuthorSection from "@/components/Home-Components/AboutAuthor";
+import BlogShowcase from "@/components/Home-Components/BlogShowcase";
 import CategoriesSection from "@/components/Home-Components/CategoriesSection";
 import FeaturedArticles from "@/components/Home-Components/FeaturedArticles";
 import HeroSection from "@/components/Home-Components/HeroSection";
@@ -15,9 +16,13 @@ export default function HomePage() {
       <section>
         <FeaturedArticles />
       </section>
+
       <section>
-        <CategoriesSection />
+        <BlogShowcase />
       </section>
+      {/* <section>
+        <CategoriesSection />
+      </section> */}
       <section>
         <TrendingPostsSection />
       </section>
