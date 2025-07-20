@@ -146,7 +146,7 @@ const BlogShowcase = () => {
                       src={blog.image || assets.blog_pic_1}
                       alt={blog.title}
                       width={400}
-                      height={250}
+                      height={350}
                       className="blog-image"
                     />
                     <div className="blog-overlay">
