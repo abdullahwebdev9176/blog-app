@@ -37,7 +37,7 @@ const BlogShowcase = () => {
     fetchBlogs();
   }, []);
 
-  const categories = ["All", "Technology", "Lifestyle", "Startup", "Health"];
+  const categories = ["All", "Healthy Lifestyle", "Nutrition & Diet", "Health & Wellness"];
 
   const filteredBlogs = activeCategory === "All" 
     ? blogs.slice(0, 3)

@@ -378,6 +378,7 @@
   }
   
   .filter-btn {
+    text-wrap: nowrap;
     padding: 0.5rem 1rem;
     font-size: 0.8rem;
   }

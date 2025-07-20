@@ -69,12 +69,11 @@ const BlogList = () => {
       <div className='category-filter-box mb-5'>
         <ul>
           <li className={`category-tab ${menu === 'All' ? 'active' : ''}`} onClick={() => setMenu('All')}>All</li>
-          <li className={`category-tab ${menu === 'Technology' ? 'active' : ''}`} onClick={() => setMenu('Technology')}>Technology</li>
-          <li className={`category-tab ${menu === 'Startup' ? 'active' : ''}`} onClick={() => setMenu('Startup')}>Startup</li>
-          <li className={`category-tab ${menu === 'Lifestyle' ? 'active' : ''}`} onClick={() => setMenu('Lifestyle')}>Lifestyle</li>
+          <li className={`category-tab ${menu === 'Healthy Lifestyle' ? 'active' : ''}`} onClick={() => setMenu('Healthy Lifestyle')}>Healthy Lifestyle</li>
+          <li className={`category-tab ${menu === 'Nutrition & Diet' ? 'active' : ''}`} onClick={() => setMenu('Nutrition & Diet')}>Nutrition & Diet</li>
+          <li className={`category-tab ${menu === 'Health & Wellness' ? 'active' : ''}`} onClick={() => setMenu('Health & Wellness')}>Health & Wellness</li>
         </ul>
       </div>
-      <div className="container-fluid">
         <div className="row justify-content-center">
           {loading ? (
             <SkeletonLoader />
@@ -86,7 +85,6 @@ const BlogList = () => {
             <h6 className='text-center'>Blogs Not Found</h6>
           )}
         </div>
-      </div>
     </section>
   );
 };
