@@ -24,11 +24,11 @@ const TrendingPost = () => {
       
       const data = await response.json();
       
-      // Sort blogs by views in descending order and take top 4
+      // Sort blogs by views in descending order and take top 3
       const sortedByViews = data.Blogs
         .filter(blog => blog.status === 'published') // Only show published blogs
         .sort((a, b) => (b.views || 0) - (a.views || 0))
-        .slice(0, 4); // Get top 4 trending posts
+        .slice(0, 3); // Get top 3 trending posts
       
       setTrendingBlogs(sortedByViews);
       console.log("Trending Posts Response", sortedByViews);
@@ -56,7 +56,7 @@ const TrendingPost = () => {
             <p className="trending-subtitle">Discover what's hot right now</p>
           </div>
           <div className="row">
-            {[1, 2, 3, 4].map((item) => (
+            {[1, 2, 3].map((item) => (
               <div key={item} className="col-12 col-sm-6 col-lg-4 mb-4">
                 <div className="card trending-card h-100">
                   <div className="placeholder-glow">
