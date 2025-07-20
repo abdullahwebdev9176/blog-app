@@ -26,6 +26,7 @@ const AddBlogPage = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [status, setStatus] = useState("draft");
   const [scheduledFor, setScheduledFor] = useState("");
+  const [isFeatured, setIsFeatured] = useState(false);
   const fileInputRef = useRef(null);
 
   const config = {
@@ -236,6 +237,7 @@ const AddBlogPage = () => {
       formData.append("excerpt", excerpt);
       formData.append("author", author);
       formData.append("status", status);
+      formData.append("isFeatured", status === "published" ? isFeatured : false);
       if (status === "scheduled" && scheduledFor) {
         formData.append("scheduledFor", scheduledFor);
       }
@@ -266,6 +268,7 @@ const AddBlogPage = () => {
         setImagePreview(null);
         setStatus("draft");
         setScheduledFor("");
+        setIsFeatured(false);
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
         }
@@ -420,6 +423,10 @@ const AddBlogPage = () => {
                     if (e.target.value !== "scheduled") {
                       setScheduledFor("");
                     }
+                    // Disable featured if status is not published
+                    if (e.target.value !== "published") {
+                      setIsFeatured(false);
+                    }
                   }}
                   required
                 >
@@ -443,6 +450,32 @@ const AddBlogPage = () => {
                   />
                 </div>
               )}
+            </div>
+
+            {/* Featured Article Checkbox */}
+            <div className="admin-form-group">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <input
+                  type="checkbox"
+                  id="isFeatured"
+                  checked={isFeatured}
+                  onChange={(e) => setIsFeatured(e.target.checked)}
+                  disabled={status !== "published"}
+                  style={{
+                    width: '16px',
+                    height: '16px',
+                    accentColor: 'var(--admin-primary)'
+                  }}
+                />
+                <label htmlFor="isFeatured" className="admin-label" style={{ margin: 0, fontSize: '14px' }}>
+                  Mark as Featured Article
+                  {status !== "published" && (
+                    <span style={{ color: 'var(--admin-text-secondary)', fontSize: '12px', display: 'block' }}>
+                      (Only published articles can be featured)
+                    </span>
+                  )}
+                </label>
+              </div>
             </div>
 
             {/* Content Editor */}

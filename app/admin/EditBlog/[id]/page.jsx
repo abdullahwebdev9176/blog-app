@@ -25,6 +25,7 @@ const EditBlogPage = ({ params }) => {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("draft");
   const [scheduledFor, setScheduledFor] = useState("");
+  const [isFeatured, setIsFeatured] = useState(false);
 
   const config = {
     readonly: false,
@@ -220,6 +221,7 @@ const EditBlogPage = ({ params }) => {
         setAuthor(blog.author || "");
         setImage(blog.image || "");
         setStatus(blog.status || "draft");
+        setIsFeatured(blog.isFeatured || false);
         
         // Format scheduledFor for datetime-local input
         if (blog.scheduledFor) {
@@ -280,6 +282,7 @@ const EditBlogPage = ({ params }) => {
       formData.append("description", description);
       formData.append("author", author);
       formData.append("status", status);
+      formData.append("isFeatured", status === "published" ? isFeatured : false);
       if (status === "scheduled" && scheduledFor) {
         formData.append("scheduledFor", scheduledFor);
       }
@@ -361,6 +364,10 @@ const EditBlogPage = ({ params }) => {
               if (e.target.value !== "scheduled") {
                 setScheduledFor("");
               }
+              // Disable featured if status is not published
+              if (e.target.value !== "published") {
+                setIsFeatured(false);
+              }
             }}
             required
           >
@@ -383,6 +390,30 @@ const EditBlogPage = ({ params }) => {
             />
           </div>
         )}
+        <div className="mb-3">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <input
+              type="checkbox"
+              id="editIsFeatured"
+              checked={isFeatured}
+              onChange={(e) => setIsFeatured(e.target.checked)}
+              disabled={status !== "published"}
+              style={{
+                width: '16px',
+                height: '16px',
+                accentColor: '#007bff'
+              }}
+            />
+            <label htmlFor="editIsFeatured" style={{ margin: 0, fontSize: '14px' }}>
+              Mark as Featured Article
+              {status !== "published" && (
+                <span style={{ color: '#6c757d', fontSize: '12px', display: 'block' }}>
+                  (Only published articles can be featured)
+                </span>
+              )}
+            </label>
+          </div>
+        </div>
         <div className="mb-3">
           <label>Current Image</label><br />
           {newImage ? (

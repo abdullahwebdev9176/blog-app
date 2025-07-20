@@ -37,9 +37,15 @@ export async function PUT(request) {
       // Handle status updates
       const status = formData.get("status");
       const scheduledFor = formData.get("scheduledFor");
+      const isFeatured = formData.get("isFeatured");
       
       if (status) {
         updateData.status = status;
+        
+        // Handle isFeatured field - only published posts can be featured
+        if (isFeatured !== null) {
+          updateData.isFeatured = status === "published" ? (isFeatured === "true") : false;
+        }
         
         // Handle publishedAt field
         if (status === "published") {
@@ -260,6 +266,7 @@ export async function POST(request) {
             const image = formData.get("image");
             const status = formData.get("status") || "draft";
             const scheduledFor = formData.get("scheduledFor");
+            const isFeatured = formData.get("isFeatured") === "true";
 
             if (!title || !description || !category || !author) {
                 console.error("Missing required fields");
@@ -324,6 +331,7 @@ export async function POST(request) {
                 status,
                 scheduledFor: status === "scheduled" ? new Date(scheduledFor) : null,
                 publishedAt: status === "published" ? new Date() : null,
+                isFeatured: status === "published" ? isFeatured : false, // Only published posts can be featured
             };
 
             console.log("Blog data to be saved:", blogData);
