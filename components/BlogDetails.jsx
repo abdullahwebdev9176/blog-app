@@ -2,7 +2,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faThumbsUp, faEye, faComment } from "@fortawesome/free-solid-svg-icons";
+import { faThumbsUp, faEye, faComment, faUser, faCalendarAlt, faTag, faHeart, faShare, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import "./BlogDetails.css";
 
@@ -194,43 +194,75 @@ const BlogDetails = ({ blog }) => {
 
     return (
         <>
-            <div className="details-container">
-                {/* Defensive check for blog.image */}
-                {blog.image ? (
-                    <div className="blog-details-img">
-                        <img src={blog.image} alt={blog.title} className="blog-image" />
-                    </div>
-                ) : (
-                    <p>No image available for this blog.</p>
-                )}
+            <div className="blog-details-wrapper">
+                <div className="container mt-4">
+                    <div className="row">
+                        <div className="col-lg-8 mx-auto">
+                            {/* Blog Meta Information */}
+                            <div className="blog-meta-section">
+                                <div className="meta-info">
+                                    <span className="category-badge">
+                                        <FontAwesomeIcon icon={faTag} className="me-2" />
+                                        {blog.category || "Uncategorized"}
+                                    </span>
+                                    <span className="publish-date">
+                                        <FontAwesomeIcon icon={faCalendarAlt} className="me-2" />
+                                        {new Date(blog.date || blog.createdAt).toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric'
+                                        })}
+                                    </span>
+                                    <span className="author-info">
+                                        <FontAwesomeIcon icon={faUser} className="me-2" />
+                                        By <strong>{blog.author || "Unknown Author"}</strong>
+                                    </span>
+                                </div>
+                            </div>
 
-                <div className="blog-content">
-                    <p>
-                        <b>Category:</b> {blog.category || "Unknown"} <br />
-                        <b>Author:</b> {blog.author || "Unknown"}
-                    </p>
-                    <h2>{blog.title || "Untitled Blog"}</h2>
-                    <div
-                        className="blog-description"
-                        dangerouslySetInnerHTML={{ __html: blog.description || "No description available." }}
-                    />
-                </div>
+                            {/* Blog Image */}
+                            {blog.image && (
+                                <div className="blog-image-section">
+                                    <img src={blog.image} alt={blog.title} className="blog-main-image" />
+                                </div>
+                            )}
 
-                {/* Stats Bar */}
-                <div className="stats-bar">
-                    <div>
-                        <button onClick={handleLikeToggle} className="like-button">
-                            <FontAwesomeIcon icon={faThumbsUp} style={{ color: liked ? "blue" : "white" }} />
-                            {`Likes ${likes}`}
-                        </button>
-                    </div>
-                    <div className="view-count">
-                        <FontAwesomeIcon icon={faEye} /> 
-                        <span>{views} Views</span>
-                    </div>
-                    <div>
-                        <FontAwesomeIcon icon={faComment} /> 
-                        <span>{comments.length} Comments</span>
+                            {/* Blog Title */}
+                            <div className="blog-title-section">
+                                <h1 className="blog-main-title">{blog.title || "Untitled Blog"}</h1>
+                            </div>
+
+                            
+
+                            {/* Blog Content */}
+                            <div className="blog-content-wrapper">
+                                <div className="blog-content">
+                                    <div
+                                        className="blog-description"
+                                        dangerouslySetInnerHTML={{ __html: blog.description || "No description available." }}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Stats Bar */}
+                            <div className="stats-bar">
+                                <div>
+                                    <button onClick={handleLikeToggle} className="like-button">
+                                        <FontAwesomeIcon icon={faThumbsUp} style={{ color: liked ? "blue" : "white" }} />
+                                        {`Likes ${likes}`}
+                                    </button>
+                                </div>
+                                <div className="view-count">
+                                    <FontAwesomeIcon icon={faEye} /> 
+                                    <span>{views} Views</span>
+                                </div>
+                                <div>
+                                    <FontAwesomeIcon icon={faComment} /> 
+                                    <span>{comments.length} Comments</span>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
             </div>
@@ -239,10 +271,6 @@ const BlogDetails = ({ blog }) => {
 
             {/* Comment Section */}
             <div className="comments-section">
-                <h3 className="comments-header">
-                    <FontAwesomeIcon icon={faComment} className="comment-icon" />
-                    Comments ({comments.length})
-                </h3>
                 
                 {/* Comment Form */}
                 <div className="comment-form-container">
