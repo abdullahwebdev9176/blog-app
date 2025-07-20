@@ -522,7 +522,13 @@ body {
   background: transparent;
   cursor: pointer;
 }
-
+.blog-excerpt{
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 @media screen and (max-width: 991px) {
   .footer-box {
     flex-direction: column;
