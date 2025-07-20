@@ -114,8 +114,8 @@ const TrendingPost = () => {
                         src={post.image || assets.blog_pic_1}
                         alt={post.title}
                         width={500}
-                        height={350}
-                        style={{ objectFit: "cover", width: "100%", height: "350px" }}
+                        height={300}
+                        style={{ objectFit: "cover", width: "100%", height: "300px" }}
                       />
                       <div className="trending-overlay"></div>
                     </div>
