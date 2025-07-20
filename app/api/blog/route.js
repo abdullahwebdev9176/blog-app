@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { BlogModel } from "@/lib/models/BlogModel";
 import { sendNewPostNotification } from "@/lib/services/emailService";
 import { uploadToCloudinary, deleteFromCloudinary } from "@/lib/config/cloudinary";
+import slugify from "slugify";
 
 const LoadDB = async () => {
     try {
@@ -12,6 +13,25 @@ const LoadDB = async () => {
         console.error("Database connection failed:", error);
         throw error;
     }
+};
+
+// Generate unique slug for blog posts
+const generateUniqueSlug = async (title) => {
+    const baseSlug = slugify(title, {
+        lower: true,
+        strict: true,
+        remove: /[*+~.()'"!:@]/g
+    });
+    
+    let slug = baseSlug;
+    let counter = 1;
+    
+    while (await BlogModel.findOne({ slug })) {
+        slug = `${baseSlug}-${counter}`;
+        counter++;
+    }
+    
+    return slug;
 };
 
 export async function PUT(request) {
@@ -25,10 +45,24 @@ export async function PUT(request) {
     let updateData = {};
     if (contentType.includes("multipart/form-data")) {
       const formData = await request.formData();
-      updateData.title = formData.get("title");
+      const newTitle = formData.get("title");
+      
+      // Get existing blog to check if title changed
+      const existingBlog = await BlogModel.findById(blogId);
+      if (!existingBlog) {
+        return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+      }
+      
+      updateData.title = newTitle;
       updateData.category = formData.get("category");
       updateData.description = formData.get("description");
       updateData.author = formData.get("author");
+      
+      // Generate new slug if title changed
+      if (newTitle && newTitle !== existingBlog.title) {
+        updateData.slug = await generateUniqueSlug(newTitle);
+      }
+      
       const excerpt = formData.get("excerpt");
       if (excerpt !== null) {
         updateData.excerpt = excerpt.trim();
@@ -50,7 +84,6 @@ export async function PUT(request) {
         // Handle publishedAt field
         if (status === "published") {
           // Only set publishedAt if not already set (preserves original publish date)
-          const existingBlog = await BlogModel.findById(blogId);
           if (!existingBlog.publishedAt) {
             updateData.publishedAt = new Date();
           }
@@ -143,11 +176,33 @@ export async function GET(request) {
         
         const { searchParams } = new URL(request.url);
         const blogId = searchParams.get("id");
+        const blogSlug = searchParams.get("slug");
         const isAdmin = searchParams.get("admin") === "true";
         
+        // Helper function to check if string is a valid MongoDB ObjectId
+        const isValidObjectId = (str) => {
+            return str && /^[0-9a-fA-F]{24}$/.test(str);
+        };
+        
         if (blogId) {
-            const blog = await BlogModel.findById(blogId);
+            let blog;
+            if (isValidObjectId(blogId)) {
+                // It's a valid ObjectId, search by _id
+                blog = await BlogModel.findById(blogId);
+            } else {
+                // It's not a valid ObjectId, treat it as a slug
+                blog = await BlogModel.findOne({ slug: blogId });
+            }
+            
             if (!blog) {   
+                return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+            }
+            return NextResponse.json({ blog });
+        }
+
+        if (blogSlug) {
+            const blog = await BlogModel.findOne({ slug: blogSlug });
+            if (!blog) {
                 return NextResponse.json({ error: "Blog not found" }, { status: 404 });
             }
             return NextResponse.json({ blog });
@@ -320,8 +375,12 @@ export async function POST(request) {
 
             console.log("Image URL:", imageUrl);
 
+            // Generate unique slug from title
+            const slug = await generateUniqueSlug(title);
+
             const blogData = {
                 title,
+                slug,
                 description,
                 excerpt: excerpt ? excerpt.trim() : '',
                 image: imageUrl,

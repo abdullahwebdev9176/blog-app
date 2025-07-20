@@ -32,7 +32,8 @@ const BlogList = () => {
     try {
       const response = await fetch('/api/blog');
     
-      console.log(response);
+      console.log("Abdullah", response);
+
       if (!response.ok) {
         toast.error('Failed to fetch blogs');
         setLoading(false);
@@ -77,7 +78,7 @@ const BlogList = () => {
             <SkeletonLoader />
           ) : finalFilteredBlogs.length > 0 ? (
             finalFilteredBlogs.map((item) => (
-              <BlogItem id={item._id} key={item._id} image={item.image} title={item.title} excerpt={item.excerpt} description={item.description} category={item.category} />
+              <BlogItem id={item._id} slug={item.slug} key={item._id} image={item.image} title={item.title} excerpt={item.excerpt} description={item.description} category={item.category} />
             ))
           ) : (
             <h6 className='text-center'>Blogs Not Found</h6>

@@ -10,13 +10,15 @@ function stripHtml(html) {
   return html.replace(/<[^>]+>/g, "");
 }
 
-const BlogItem = ({ title, image, excerpt, category, id }) => {
+const BlogItem = ({ title, image, excerpt, category, id, slug }) => {
+    const linkHref = slug ? `/blogs/${slug}` : `/blogs/${id}`;
+    
     return (
         <>
             <div className="col-md-4 mb-4">
                 <div className="card blog-card h-100 shadow-sm">
                     <div className="blog-card-image">
-                        <Link href={`/blogs/${id}`}>
+                        <Link href={linkHref}>
                             <Image src={image} className="card-img-top" alt={title} width={400} height={300}/>
                         </Link>
                     </div>
@@ -24,7 +26,7 @@ const BlogItem = ({ title, image, excerpt, category, id }) => {
                         <span className="category-title">{category}</span>
                         <h5 className="card-title">{title}</h5>
                         <p className="card-text">{excerpt}</p>
-                        <Link href={`/blogs/${id}`} className="blog-btn">
+                        <Link href={linkHref} className="blog-btn">
                             Read More <Image src={assets.arrow} className="ms-2" alt="" width={12} />
                         </Link>
                     </div>
