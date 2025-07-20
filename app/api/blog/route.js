@@ -14,12 +14,8 @@ const LoadDB = async () => {
     }
 };
 
-// Ensure database connection before handling requests
-LoadDB().catch((error) => {
-    console.error("Error connecting to the database:", error);
-});
-
 export async function PUT(request) {
+  await LoadDB(); // Ensure DB connection before proceeding
   const blogId = request.nextUrl.searchParams.get("id");
   if (!blogId) {
     return NextResponse.json({ error: "Blog ID is required" }, { status: 400 });
@@ -76,6 +72,7 @@ export async function PUT(request) {
 }
 
 export async function DELETE(request) {
+  await LoadDB(); // Ensure DB connection before proceeding
   const blogId = request.nextUrl.searchParams.get("id");
   if (!blogId) {
     return NextResponse.json({ error: "Blog ID is required" }, { status: 400 });
@@ -106,20 +103,29 @@ export async function DELETE(request) {
 }
 
 export async function GET(request) {
-    const blogId = request.nextUrl.searchParams.get("id");
-    if (blogId) {
-        const blog = await BlogModel.findById(blogId);
-        if (!blog) {   
-            return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+    try {
+        await LoadDB(); // Ensure DB connection before proceeding
+        
+        const blogId = request.nextUrl.searchParams.get("id");
+        if (blogId) {
+            const blog = await BlogModel.findById(blogId);
+            if (!blog) {   
+                return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+            }
+            return NextResponse.json({ blog });
         }
-        return NextResponse.json({ blog });
-    }
 
-    const Blogs = await BlogModel.find({}).sort({ createdAt: -1 });
-    return NextResponse.json({Blogs});
+        const Blogs = await BlogModel.find({}).sort({ createdAt: -1 });
+        return NextResponse.json({Blogs});
+    } catch (error) {
+        console.error("Error in GET /api/blog:", error);
+        return NextResponse.json({ error: "Failed to fetch blogs" }, { status: 500 });
+    }
 }
 
 export async function PATCH(request) {
+    await LoadDB(); // Ensure DB connection before proceeding
+    
     const { blogId } = await request.json();
     
     if (!blogId) {

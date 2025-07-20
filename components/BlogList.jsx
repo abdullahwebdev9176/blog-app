@@ -31,6 +31,8 @@ const BlogList = () => {
     setLoading(true);
     try {
       const response = await fetch('/api/blog');
+    
+      console.log(response);
       if (!response.ok) {
         toast.error('Failed to fetch blogs');
         setLoading(false);
