@@ -2,11 +2,19 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/config/db";
 import Comment from "@/lib/models/CommentModel";
 
-// Connect to the database
-await connectDB();
+const LoadDB = async () => {
+    try {
+        await connectDB();
+    } catch (error) {
+        console.error("Database connection failed:", error);
+        throw error;
+    }
+};
 
 export async function POST(req) {
     try {
+        await LoadDB(); // Ensure DB connection before proceeding
+        
         // Find all comments that don't have a status field or have null/undefined status
         const commentsWithoutStatus = await Comment.find({
             $or: [

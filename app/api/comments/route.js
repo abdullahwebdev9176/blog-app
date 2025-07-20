@@ -2,18 +2,26 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/config/db";
 import Comment from "@/lib/models/CommentModel";
 
-// Connect to the database
-await connectDB();
+const LoadDB = async () => {
+    try {
+        await connectDB();
+    } catch (error) {
+        console.error("Database connection failed:", error);
+        throw error;
+    }
+};
 
 export async function GET(req) {
-  const { searchParams } = new URL(req.url);
-  const blogId = searchParams.get("blogId");
-
-  if (!blogId) {
-    return NextResponse.json({ error: "Blog ID is required" }, { status: 400 });
-  }
-
   try {
+    await LoadDB(); // Ensure DB connection before proceeding
+    
+    const { searchParams } = new URL(req.url);
+    const blogId = searchParams.get("blogId");
+
+    if (!blogId) {
+      return NextResponse.json({ error: "Blog ID is required" }, { status: 400 });
+    }
+
     // Only fetch approved comments for public display
     const blogComments = await Comment.find({ 
       blogId, 
@@ -31,20 +39,22 @@ export async function GET(req) {
 }
 
 export async function POST(req) {
-  const data = await req.json();
-  console.log("Received data for new comment:", data);
-
-  if (!data.blogId || !data.name || !data.text) {
-    console.error("Missing required fields in request:", data);
-    return NextResponse.json({ error: "Missing required fields (blogId, name, text)" }, { status: 400 });
-  }
-
-  // Validate email if provided
-  if (data.email && !isValidEmail(data.email)) {
-    return NextResponse.json({ error: "Invalid email format" }, { status: 400 });
-  }
-
   try {
+    await LoadDB(); // Ensure DB connection before proceeding
+    
+    const data = await req.json();
+    console.log("Received data for new comment:", data);
+
+    if (!data.blogId || !data.name || !data.text) {
+      console.error("Missing required fields in request:", data);
+      return NextResponse.json({ error: "Missing required fields (blogId, name, text)" }, { status: 400 });
+    }
+
+    // Validate email if provided
+    if (data.email && !isValidEmail(data.email)) {
+      return NextResponse.json({ error: "Invalid email format" }, { status: 400 });
+    }
+
     const commentData = {
       blogId: data.blogId,
       name: data.name.trim(),
