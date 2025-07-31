@@ -5,8 +5,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import dynamic from "next/dynamic";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUpload, faSpinner, faImage, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { Upload, Loader2, Image, Plus, Search, FileText, Tags } from 'lucide-react';
 
 // Dynamically import Jodit editor
 const JoditEditor = dynamic(() => import("jodit-react"), {
@@ -27,7 +26,30 @@ const AddBlogPage = () => {
   const [status, setStatus] = useState("draft");
   const [scheduledFor, setScheduledFor] = useState("");
   const [isFeatured, setIsFeatured] = useState(false);
+  const [metaDescription, setMetaDescription] = useState("");
+  const [focusKeywords, setFocusKeywords] = useState([]);
+  const [currentKeyword, setCurrentKeyword] = useState("");
   const fileInputRef = useRef(null);
+
+  // Helper functions for focus keywords
+  const addKeyword = () => {
+    const keyword = currentKeyword.trim();
+    if (keyword && !focusKeywords.includes(keyword) && focusKeywords.length < 5) {
+      setFocusKeywords([...focusKeywords, keyword]);
+      setCurrentKeyword("");
+    }
+  };
+
+  const removeKeyword = (keywordToRemove) => {
+    setFocusKeywords(focusKeywords.filter(keyword => keyword !== keywordToRemove));
+  };
+
+  const handleKeywordInputKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addKeyword();
+    }
+  };
 
   const config = {
     readonly: false,
@@ -238,6 +260,8 @@ const AddBlogPage = () => {
       formData.append("author", author);
       formData.append("status", status);
       formData.append("isFeatured", status === "published" ? isFeatured : false);
+      formData.append("metaDescription", metaDescription);
+      formData.append("focusKeywords", focusKeywords.join(", "));
       if (status === "scheduled" && scheduledFor) {
         formData.append("scheduledFor", scheduledFor);
       }
@@ -269,6 +293,9 @@ const AddBlogPage = () => {
         setStatus("draft");
         setScheduledFor("");
         setIsFeatured(false);
+        setMetaDescription("");
+        setFocusKeywords([]);
+        setCurrentKeyword("");
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
         }
@@ -326,7 +353,7 @@ const AddBlogPage = () => {
       <div className="admin-card">
         <div className="admin-card-header">
           <h1 className="admin-card-title">
-            <FontAwesomeIcon icon={faPlus} style={{ marginRight: '0.5rem' }} />
+            <Plus size={20} style={{ marginRight: '0.5rem' }} />
             Create New Blog Post
           </h1>
           <p style={{ 
@@ -478,6 +505,211 @@ const AddBlogPage = () => {
               </div>
             </div>
 
+            {/* SEO Settings Section */}
+            <div className="admin-form-section">
+              <h3 className="admin-section-title" style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.75rem',
+                color: 'var(--admin-primary)',
+                fontSize: '1.125rem',
+                fontWeight: '600',
+                marginBottom: '1.5rem',
+                paddingBottom: '0.75rem',
+                borderBottom: '2px solid var(--admin-border-color)'
+              }}>
+                <Search 
+                  size={20}
+                  style={{ 
+                    color: 'var(--admin-primary)'
+                  }} 
+                />
+                SEO Settings
+                <span style={{ 
+                  fontSize: '0.75rem', 
+                  color: 'var(--admin-text-secondary)',
+                  fontWeight: '400',
+                  marginLeft: '0.5rem'
+                }}>
+                  Optimize your content for search engines
+                </span>
+              </h3>
+              
+              {/* Meta Description */}
+              <div className="admin-form-group">
+                <label className="admin-label" style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '0.5rem',
+                  fontSize: '0.9rem',
+                  fontWeight: '500'
+                }}>
+                  <FileText 
+                    size={16}
+                    style={{ color: 'var(--admin-info)' }} 
+                  />
+                  Meta Description
+                  <span style={{ 
+                    color: 'var(--admin-text-secondary)', 
+                    fontSize: '0.75rem',
+                    fontWeight: '400'
+                  }}>
+                    (Search engine preview text)
+                  </span>
+                </label>
+                <textarea
+                  className="admin-textarea"
+                  value={metaDescription}
+                  onChange={(e) => setMetaDescription(e.target.value)}
+                  placeholder="Write a compelling description that summarizes your blog post for search engines and social media previews..."
+                  maxLength={250}
+                  rows={4}
+                  style={{ resize: 'vertical' }}
+                />
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  marginTop: '0.5rem',
+                  fontSize: '12px',
+                  color: 'var(--admin-text-secondary)'
+                }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                    Keep it between 120-160 characters for optimal display in search results
+                  </span>
+                  <span style={{ 
+                    fontWeight: '500',
+                    color: metaDescription.length > 160 ? 'var(--admin-danger)' : 
+                           metaDescription.length > 120 ? 'var(--admin-success)' : 
+                           'var(--admin-text-secondary)'
+                  }}>
+                    {metaDescription.length}/250
+                  </span>
+                </div>
+              </div>
+
+              {/* Focus Keywords */}
+              <div className="admin-form-group">
+                <label className="admin-label" style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '0.5rem',
+                  fontSize: '0.9rem',
+                  fontWeight: '500'
+                }}>
+                  <Tags 
+                    size={16}
+                    style={{ color: 'var(--admin-warning)' }} 
+                  />
+                  Focus Keywords
+                  <span style={{ 
+                    color: 'var(--admin-text-secondary)', 
+                    fontSize: '0.75rem',
+                    fontWeight: '400'
+                  }}>
+                    (2-5 keywords for SEO)
+                  </span>
+                </label>
+                
+                {/* Keywords Input */}
+                <div style={{ marginBottom: '1rem' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                    <input
+                      type="text"
+                      className="admin-input"
+                      value={currentKeyword}
+                      onChange={(e) => setCurrentKeyword(e.target.value)}
+                      onKeyPress={handleKeywordInputKeyPress}
+                      placeholder="Type a keyword and press Enter"
+                      disabled={focusKeywords.length >= 5}
+                      style={{ flex: 1 }}
+                    />
+                    <button
+                      type="button"
+                      onClick={addKeyword}
+                      disabled={!currentKeyword.trim() || focusKeywords.includes(currentKeyword.trim()) || focusKeywords.length >= 5}
+                      className="admin-btn admin-btn-outline"
+                      style={{ 
+                        padding: '0.5rem 1rem',
+                        minWidth: 'auto',
+                        fontSize: '0.875rem'
+                      }}
+                    >
+                      <Plus size={14} style={{ marginRight: '0.25rem' }} />
+                      Add
+                    </button>
+                  </div>
+                </div>
+
+                {/* Keywords Display */}
+                {focusKeywords.length > 0 && (
+                  <div style={{ marginBottom: '1rem' }}>
+                    <div style={{ 
+                      display: 'flex', 
+                      flexWrap: 'wrap', 
+                      gap: '0.5rem',
+                      padding: '1rem',
+                      backgroundColor: 'var(--admin-bg-secondary)',
+                      borderRadius: 'var(--admin-radius-md)',
+                      border: '1px solid var(--admin-border-color)'
+                    }}>
+                      {focusKeywords.map((keyword, index) => (
+                        <span
+                          key={index}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.25rem',
+                            padding: '0.375rem 0.75rem',
+                            backgroundColor: 'var(--admin-primary)',
+                            color: 'white',
+                            borderRadius: '20px',
+                            fontSize: '0.875rem',
+                            fontWeight: '500',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease'
+                          }}
+                          onClick={() => removeKeyword(keyword)}
+                          title="Click to remove"
+                        >
+                          {keyword}
+                          <span style={{ 
+                            marginLeft: '0.25rem',
+                            fontSize: '1rem',
+                            opacity: 0.8,
+                            hover: { opacity: 1 }
+                          }}>
+                            ×
+                          </span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Helper Text */}
+                <div style={{ 
+                  fontSize: '12px',
+                  color: 'var(--admin-text-secondary)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.25rem'
+                }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                    Enter keywords that best describe your content (press Enter or click Add)
+                  </span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                    Current keywords: {focusKeywords.length}/5 
+                    {focusKeywords.length >= 5 && " (Maximum reached)"}
+                  </span>
+                  {focusKeywords.length > 0 && (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                      Click on any keyword tag to remove it
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
             {/* Content Editor */}
             <div className="admin-form-group">
               <label className="admin-label">Content *</label>
@@ -519,7 +751,7 @@ const AddBlogPage = () => {
                   </div>
                 ) : (
                   <>
-                    <FontAwesomeIcon icon={faImage} className="admin-file-upload-icon" />
+                    <Image className="admin-file-upload-icon" size={48} />
                     <p className="admin-file-upload-text">Click to upload featured image</p>
                     <p className="admin-file-upload-subtext">PNG, JPG, GIF up to 10MB</p>
                   </>
@@ -545,6 +777,10 @@ const AddBlogPage = () => {
                 setImagePreview(null);
                 setStatus("draft");
                 setScheduledFor("");
+                setIsFeatured(false);
+                setMetaDescription("");
+                setFocusKeywords([]);
+                setCurrentKeyword("");
                 if (fileInputRef.current) {
                   fileInputRef.current.value = '';
                 }
@@ -560,14 +796,20 @@ const AddBlogPage = () => {
             >
               {loading ? (
                 <>
-                  <FontAwesomeIcon icon={faSpinner} spin />
+                  <Loader2 
+                    size={16} 
+                    style={{ 
+                      animation: 'spin 1s linear infinite',
+                      marginRight: '0.5rem'
+                    }} 
+                  />
                   {status === "published" ? "Publishing..." : 
                    status === "scheduled" ? "Scheduling..." : 
                    status === "draft" ? "Saving Draft..." : "Saving as Private..."}
                 </>
               ) : (
                 <>
-                  <FontAwesomeIcon icon={faUpload} />
+                  <Upload size={16} />
                   {status === "published" ? "Publish Post" : 
                    status === "scheduled" ? "Schedule Post" : 
                    status === "draft" ? "Save as Draft" : "Save as Private"}

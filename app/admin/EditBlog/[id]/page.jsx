@@ -1,9 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import dynamic from "next/dynamic";
+import { Upload, Loader2, Image, Plus, Search, FileText, Tags } from 'lucide-react';
 
 // Dynamically import Jodit editor
 const JoditEditor = dynamic(() => import("jodit-react"), {
@@ -26,6 +27,29 @@ const EditBlogPage = ({ params }) => {
   const [status, setStatus] = useState("draft");
   const [scheduledFor, setScheduledFor] = useState("");
   const [isFeatured, setIsFeatured] = useState(false);
+  const [metaDescription, setMetaDescription] = useState("");
+  const [focusKeywords, setFocusKeywords] = useState([]);
+  const [currentKeyword, setCurrentKeyword] = useState("");
+
+  // Helper functions for focus keywords
+  const addKeyword = () => {
+    const keyword = currentKeyword.trim();
+    if (keyword && !focusKeywords.includes(keyword) && focusKeywords.length < 5) {
+      setFocusKeywords([...focusKeywords, keyword]);
+      setCurrentKeyword("");
+    }
+  };
+
+  const removeKeyword = (keywordToRemove) => {
+    setFocusKeywords(focusKeywords.filter(keyword => keyword !== keywordToRemove));
+  };
+
+  const handleKeywordInputKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addKeyword();
+    }
+  };
 
   const config = {
     readonly: false,
@@ -222,6 +246,24 @@ const EditBlogPage = ({ params }) => {
         setImage(blog.image || "");
         setStatus(blog.status || "draft");
         setIsFeatured(blog.isFeatured || false);
+        setMetaDescription(blog.metaDescription || "");
+        
+        // Handle focus keywords - convert from string to array
+        if (blog.focusKeywords) {
+          const keywordsArray = blog.focusKeywords.split(", ").filter(k => k.trim());
+          setFocusKeywords(keywordsArray);
+        } else {
+          setFocusKeywords([]);
+        }
+        setMetaDescription(blog.metaDescription || "");
+        
+        // Parse focus keywords
+        if (blog.focusKeywords && typeof blog.focusKeywords === 'string') {
+          const keywords = blog.focusKeywords.split(',').map(k => k.trim()).filter(k => k);
+          setFocusKeywords(keywords);
+        } else {
+          setFocusKeywords([]);
+        }
         
         // Format scheduledFor for datetime-local input
         if (blog.scheduledFor) {
@@ -283,6 +325,8 @@ const EditBlogPage = ({ params }) => {
       formData.append("author", author);
       formData.append("status", status);
       formData.append("isFeatured", status === "published" ? isFeatured : false);
+      formData.append("metaDescription", metaDescription);
+      formData.append("focusKeywords", focusKeywords.join(", "));
       if (status === "scheduled" && scheduledFor) {
         formData.append("scheduledFor", scheduledFor);
       }
@@ -414,6 +458,217 @@ const EditBlogPage = ({ params }) => {
             </label>
           </div>
         </div>
+
+        {/* SEO Settings Section */}
+        <div className="admin-form-section" style={{ 
+          background: 'var(--admin-bg-secondary)', 
+          padding: '1.5rem', 
+          borderRadius: 'var(--admin-radius-md)', 
+          border: '1px solid var(--admin-border-color)',
+          marginBottom: '1.5rem'
+        }}>
+          <h3 className="admin-section-title" style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '0.75rem',
+            color: 'var(--admin-primary)',
+            fontSize: '1.125rem',
+            fontWeight: '600',
+            marginBottom: '1.5rem',
+            paddingBottom: '0.75rem',
+            borderBottom: '2px solid var(--admin-border-color)'
+          }}>
+            <Search 
+              size={20}
+              style={{ 
+                color: 'var(--admin-primary)'
+              }} 
+            />
+            SEO Settings
+            <span style={{ 
+              fontSize: '0.75rem', 
+              color: 'var(--admin-text-secondary)',
+              fontWeight: '400',
+              marginLeft: '0.5rem'
+            }}>
+              Optimize your content for search engines
+            </span>
+          </h3>
+          
+          {/* Meta Description */}
+          <div className="mb-3">
+            <label style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.5rem',
+              fontSize: '0.9rem',
+              fontWeight: '500'
+            }}>
+              <FileText 
+                size={16}
+                style={{ color: 'var(--admin-info)' }} 
+              />
+              Meta Description
+              <span style={{ 
+                color: 'var(--admin-text-secondary)', 
+                fontSize: '0.75rem',
+                fontWeight: '400'
+              }}>
+                (Search engine preview text)
+              </span>
+            </label>
+            <textarea
+              className="form-control"
+              value={metaDescription}
+              onChange={(e) => setMetaDescription(e.target.value)}
+              placeholder="Write a compelling description that summarizes your blog post for search engines and social media previews..."
+              maxLength={250}
+              rows={4}
+              style={{ resize: 'vertical' }}
+            />
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              marginTop: '0.5rem',
+              fontSize: '12px',
+              color: 'var(--admin-text-secondary)'
+            }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                Keep it between 120-160 characters for optimal display in search results
+              </span>
+              <span style={{ 
+                fontWeight: '500',
+                color: metaDescription.length > 160 ? 'var(--admin-danger)' : 
+                       metaDescription.length > 120 ? 'var(--admin-success)' : 
+                       'var(--admin-text-secondary)'
+              }}>
+                {metaDescription.length}/250
+              </span>
+            </div>
+          </div>
+
+          {/* Focus Keywords */}
+          <div className="mb-3">
+            <label style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.5rem',
+              fontSize: '0.9rem',
+              fontWeight: '500'
+            }}>
+              <Tags 
+                size={16}
+                style={{ color: 'var(--admin-warning)' }} 
+              />
+              Focus Keywords
+              <span style={{ 
+                color: 'var(--admin-text-secondary)', 
+                fontSize: '0.75rem',
+                fontWeight: '400'
+              }}>
+                (2-5 keywords for SEO)
+              </span>
+            </label>
+            
+            {/* Keywords Input */}
+            <div style={{ marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={currentKeyword}
+                  onChange={(e) => setCurrentKeyword(e.target.value)}
+                  onKeyPress={handleKeywordInputKeyPress}
+                  placeholder="Type a keyword and press Enter"
+                  disabled={focusKeywords.length >= 5}
+                  style={{ flex: 1 }}
+                />
+                <button
+                  type="button"
+                  onClick={addKeyword}
+                  disabled={!currentKeyword.trim() || focusKeywords.includes(currentKeyword.trim()) || focusKeywords.length >= 5}
+                  className="btn btn-outline-primary"
+                  style={{ 
+                    padding: '0.5rem 1rem',
+                    minWidth: 'auto',
+                    fontSize: '0.875rem'
+                  }}
+                >
+                  <Plus size={14} style={{ marginRight: '0.25rem' }} />
+                  Add
+                </button>
+              </div>
+            </div>
+
+            {/* Keywords Display */}
+            {focusKeywords.length > 0 && (
+              <div style={{ marginBottom: '1rem' }}>
+                <div style={{ 
+                  display: 'flex', 
+                  flexWrap: 'wrap', 
+                  gap: '0.5rem',
+                  padding: '1rem',
+                  backgroundColor: 'var(--admin-bg-secondary)',
+                  borderRadius: 'var(--admin-radius-md)',
+                  border: '1px solid var(--admin-border-color)'
+                }}>
+                  {focusKeywords.map((keyword, index) => (
+                    <span
+                      key={index}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                        padding: '0.375rem 0.75rem',
+                        backgroundColor: 'var(--admin-primary)',
+                        color: 'white',
+                        borderRadius: '20px',
+                        fontSize: '0.875rem',
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onClick={() => removeKeyword(keyword)}
+                      title="Click to remove"
+                    >
+                      {keyword}
+                      <span style={{ 
+                        marginLeft: '0.25rem',
+                        fontSize: '1rem',
+                        opacity: 0.8
+                      }}>
+                        ×
+                      </span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Helper Text */}
+            <div style={{ 
+              fontSize: '12px',
+              color: 'var(--admin-text-secondary)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.25rem'
+            }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                💡 Enter keywords that best describe your content (press Enter or click Add)
+              </span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                🎯 Current keywords: {focusKeywords.length}/5 
+                {focusKeywords.length >= 5 && " (Maximum reached)"}
+              </span>
+              {focusKeywords.length > 0 && (
+                <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                  🗑️ Click on any keyword tag to remove it
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
         <div className="mb-3">
           <label>Current Image</label><br />
           {newImage ? (
