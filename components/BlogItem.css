@@ -241,6 +241,7 @@
     box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
     color: white;
     text-decoration: none;
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
 }
 
 /* Responsive Design */
